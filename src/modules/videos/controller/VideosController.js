@@ -13,7 +13,7 @@ export class  VideosController extends CrudControllerUtils {
     this.router.get('/', async (req, res, next) => {
       try {
         
-        const filter = await this.validatorSchema.validateFilters(req.query);
+        const filter = await this.validatorSchema.findAll(req.query);
         
         const videos = await this.videoService.findAll(filter);
 
@@ -21,6 +21,21 @@ export class  VideosController extends CrudControllerUtils {
       } catch (error) {
         next(error);
       }
+    });
+  }
+
+  findOne(){
+    this.router.get('/:id', async (req, res, next)=>{
+
+     try {
+      const elementId = await this.validatorSchema.findOne(req.params);
+
+      const video = await this.videoService.findOne(elementId);
+
+      return res.status(200).send(video);
+     } catch (error) {
+      next(error);
+     }
     });
   }
 }
