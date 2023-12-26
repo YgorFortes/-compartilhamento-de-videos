@@ -12,8 +12,8 @@ export class ValitatorSchemaVideo {
   //   })
   // }
 
-  async validateFilters (attributes){
-    const videoSchemaGet = Yup.object({
+  async findAll (attributes){
+    const videoSchemaFindAll = Yup.object({
       query: Yup.object().shape({
         titulo: Yup.string().trim(),
         descricao: Yup.string().trim(),
@@ -22,9 +22,23 @@ export class ValitatorSchemaVideo {
      
     });
     
-    const resultado =  await videoSchemaGet.fields.query.validate(attributes);
+    const result =  await videoSchemaFindAll.fields.query.validate(attributes);
 
-    return resultado;
+    return result;
   }
+
+  async findOne(atribbutes){
+    const videoSchemaFindOne = Yup.object({
+      params: Yup.object().shape({
+        id: Yup.string().trim()
+        .required('O parâmetros id no params é obigatório.')
+        .uuid('O parâmetros elementId no params deve ser UUID válido.')
+      }),
+    });
+
+    const result = await videoSchemaFindOne.fields.params.validate(atribbutes);
+    return result;
+  }
+
 }
 
