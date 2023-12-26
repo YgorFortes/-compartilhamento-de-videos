@@ -12,7 +12,7 @@ export class VideoService extends CrudServiceUtils{
   async findAll(filter){
    try {
 
-    await this.validatorSchema.validateFilters(filter);
+    await this.validatorSchema.findAll(filter);
     
     const videos = await this.videoRepository.findAll(filter);
     return videos;
@@ -21,6 +21,23 @@ export class VideoService extends CrudServiceUtils{
     console.error(error);
     throw error;
    }
+  }
+
+  async findOne(elementId){
+    try {
+     await this.validatorSchema.findOne(elementId);
+
+     const video = await this.videoRepository.findOne(elementId);
+
+     if(!video){
+      return [];
+     }
+
+     return video;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 
 }
