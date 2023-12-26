@@ -14,12 +14,15 @@ export class ValitatorSchemaVideo {
 
   async validateFilters (attributes){
     const videoSchemaGet = Yup.object({
-      titulo: Yup.string().trim(),
-      descricao: Yup.string().trim(),
-      url: Yup.string().trim(),
+      query: Yup.object().shape({
+        titulo: Yup.string().trim(),
+        descricao: Yup.string().trim(),
+        url: Yup.string().trim().url('A url deve ser valida'),
+      })
+     
     });
     
-    const resultado =  await videoSchemaGet.validate(attributes);
+    const resultado =  await videoSchemaGet.fields.query.validate(attributes);
 
     return resultado;
   }
