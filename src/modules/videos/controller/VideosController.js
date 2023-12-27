@@ -1,6 +1,6 @@
 import { VideoService } from "../services/VideoService.js";
 import CrudControllerUtils from "../../../utils/crud/crudControllerUtils.js";
-import { ValitatorSchemaVideo } from "../validators/ValitatorSchemaVideo.js";
+import { ValitatorSchemaVideo } from "../validators/ValidatorSchemaVideo.js";
  
 export class  VideosController extends CrudControllerUtils {
   constructor(){
@@ -28,14 +28,28 @@ export class  VideosController extends CrudControllerUtils {
     this.router.get('/:id', async (req, res, next)=>{
 
      try {
-      const elementId = await this.validatorSchema.findOne(req.params);
+      const videoId = await this.validatorSchema.findOne(req.params);
 
-      const video = await this.videoService.findOne(elementId);
+      const video = await this.videoService.findOne(videoId);
 
       return res.status(200).send(video);
      } catch (error) {
       next(error);
      }
+    });
+  }
+
+  create(){
+    this.router.post('/', async (req, res, next)=>{
+      try {
+        const videoData = await this.validatorSchema.create(req.body);
+
+        const newVideo = await this.videoService.create(videoData);
+
+        return res.status(201).send(newVideo);
+      } catch (error) {
+        next(error);
+      }
     });
   }
 }
