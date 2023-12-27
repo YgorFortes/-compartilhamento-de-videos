@@ -2,17 +2,8 @@ import Yup from 'yup';
 
 export class ValitatorSchemaVideo {
 
-  // async SchemaGetForId(){
-  //   Yup.object({
-  //     elementId: Yup.number()
-  //     .typeError('O parâmetros id de clientes na url só recebe números.')
-  //     .positive('O parâmetros id de clientes na url só recebe números positivos.')
-  //     .integer('O parâmetros id de clientes na url só recebe números inteiros.')
-  //     .required('O parâmetros id de clientes na url é obigatório.')
-  //   })
-  // }
 
-  async findAll (attributes){
+  async findAll (videoQuery){
     const videoSchemaFindAll = Yup.object({
       query: Yup.object().shape({
         titulo: Yup.string().trim(),
@@ -22,12 +13,11 @@ export class ValitatorSchemaVideo {
      
     });
     
-    const result =  await videoSchemaFindAll.fields.query.validate(attributes);
-
+    const result =  await videoSchemaFindAll.fields.query.validate(videoQuery);
     return result;
   }
 
-  async findOne(atribbutes){
+  async findOne(videoParams){
     const videoSchemaFindOne = Yup.object({
       params: Yup.object().shape({
         id: Yup.string().trim()
@@ -36,11 +26,11 @@ export class ValitatorSchemaVideo {
       }),
     });
 
-    const result = await videoSchemaFindOne.fields.params.validate(atribbutes);
+    const result = await videoSchemaFindOne.fields.params.validate(videoParams);
     return result;
   }
 
-  async create (element){
+  async create (videoData){
     const videoSchemaPost = Yup.object({
       body: Yup.object().shape({
         titulo: Yup.string().trim().required('O campo titulo é obigatório.'),
@@ -49,8 +39,25 @@ export class ValitatorSchemaVideo {
       })
     });
 
-    const result = await videoSchemaPost.fields.body.validate(element);
+    const result = await videoSchemaPost.fields.body.validate(videoData);
+    return result;
+  }
 
+  async update(videoData){
+    const videoSchemaUpdate = Yup.object({
+      params: Yup.object().shape({
+        id: Yup.string().trim()
+        .required('O parâmetros id no params é obigatório.')
+        .uuid('O parâmetros elementId no params deve ser UUID válido.')
+      }),
+      body: Yup.object().shape({
+        titulo: Yup.string().trim(),
+        descricao: Yup.string().trim(),
+        url: Yup.string().trim().url('O campo url deve ter um formato válido.')
+      }),
+    });
+
+    const result = await videoSchemaUpdate.validate(videoData);
     return result;
   }
 
