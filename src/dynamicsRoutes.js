@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router , json } from "express";
 import { AppController } from './modules/app/appController.js';
 import { VideosController } from "./modules/videos/controller/VideosController.js";
 import { ErrorMiddlewares } from "./modules/app/middlewares/ErrorMiddlewares.js";
@@ -7,12 +7,13 @@ import { ErrorMiddlewares } from "./modules/app/middlewares/ErrorMiddlewares.js"
 class dynamicsRoutes {
   constructor(){
     this.router = Router();
+    this.json = json();
   }
 
   setupRouter(){
    /* instancia os controllers 
     use o this.use aqui */
-
+    this.router.use(this.json);
     
 
     const appController = new AppController();
