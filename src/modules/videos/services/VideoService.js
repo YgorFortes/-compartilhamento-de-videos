@@ -1,6 +1,7 @@
 import { VideosRepository } from "../repository/videosRepository.js";
 import { CrudServiceUtils } from "../../../utils/crud/crudServiceUtils.js";
-import { ValitatorSchemaVideo } from "../validators/ValitatorSchemaVideo.js";
+import { ValitatorSchemaVideo } from "../validators/ValidatorSchemaVideo.js";
+import { CustomError } from "../../app/erros/CustomError.js";
 
 export class VideoService extends CrudServiceUtils{
   constructor(){
@@ -18,16 +19,15 @@ export class VideoService extends CrudServiceUtils{
     return videos;
 
    } catch (error) {
-    console.error(error);
     throw error;
    }
   }
 
-  async findOne(elementId){
+  async findOne(videoId){
     try {
-     await this.validatorSchema.findOne(elementId);
+     await this.validatorSchema.findOne(videoId);
 
-     const video = await this.videoRepository.findOne(elementId);
+     const video = await this.videoRepository.findOne(videoId);
 
      if(!video){
       return [];
@@ -35,7 +35,22 @@ export class VideoService extends CrudServiceUtils{
 
      return video;
     } catch (error) {
-      console.error(error);
+      throw error;
+    }
+  }
+
+  async create(videoData){
+    try {
+      await this.validatorSchema.create(videoData);
+
+      const newVideo = await this.videoRepository.create(videoData);
+
+      if(!newVideo){
+        throw CustomError('Não foi possível cadastrar o video', );
+      }
+
+      return newVideo;
+    } catch (error) {
       throw error;
     }
   }
