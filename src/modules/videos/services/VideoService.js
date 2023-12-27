@@ -42,7 +42,7 @@ export class VideoService extends CrudServiceUtils{
   async create(videoData){
     try {
       await this.validatorSchema.create(videoData);
-
+      
       const newVideo = await this.videoRepository.create(videoData);
 
       if(!newVideo){
@@ -50,6 +50,26 @@ export class VideoService extends CrudServiceUtils{
       }
 
       return newVideo;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async update(videoId, videoData){
+    try {
+
+      await this.validatorSchema.update({params: videoId, body: videoData});
+
+      const video = await this.findOne(videoId);
+
+      if(video.length <1){
+        throw new CustomError('Video não encontrado.', 404);
+      }
+
+      const newInfoVideo = await this.videoRepository.update(videoId, videoData);
+
+      return newInfoVideo;
+
     } catch (error) {
       throw error;
     }

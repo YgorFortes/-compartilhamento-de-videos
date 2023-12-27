@@ -35,4 +35,14 @@ export class VideosRepository extends CrudRepositoryUtils {
   create(videoData){
     return this.prismaClient.videos.create({data: videoData});
   }
+
+  update(videoId, videoData){
+    const {id} = videoId;
+    return this.prismaClient.videos.update(
+      { 
+        data: videoData, 
+        where: {id} 
+      },
+    );
+  }
 }

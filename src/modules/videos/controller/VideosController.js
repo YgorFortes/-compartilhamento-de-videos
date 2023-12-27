@@ -52,4 +52,19 @@ export class  VideosController extends CrudControllerUtils {
       }
     });
   }
+
+  update(){
+    this.router.patch('/:id', async (req, res, next)=>{
+      try {
+        const videoData = await this.validatorSchema.update({body: req.body, params: req.params});
+
+        const videoUpdated = await this.videoService.update(videoData.params, videoData.body);
+
+        return res.status(200).send(videoUpdated);
+
+      } catch (error) {
+        next(error);
+      }
+    });
+  }
 }
