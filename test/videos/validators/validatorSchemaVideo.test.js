@@ -141,3 +141,77 @@ describe('Testando o método create de ValitatorSchemaVideo', ()=>{
   });
 
 });
+
+describe('Testando o método update de ValitatorSchemaVideo ',  ()=>{
+
+  let valitatorSchemaVideo;
+  beforeEach(()=>{
+    valitatorSchemaVideo = new ValitatorSchemaVideo();
+  });
+
+  it('Deve retirar os espaços em branco do body ', async()=>{
+    const videoData = {
+        body: {
+          titulo: 'Ronaldo test ',
+          url: ' https://trello.com/c/e9pwuV1N/12-requisi%C3%A7%C3%A3o-para-atualizar-um-v%C3%ADdeo-pelo-id ',
+          descricao: 'descricao'
+        },
+        params: { id: '2b37f2b1-448b-4924-88af-4fae372beb50 ' }
+      };
+    
+       
+
+    const elementExpect =  {
+      body: {
+        titulo: 'Ronaldo test',
+        url: 'https://trello.com/c/e9pwuV1N/12-requisi%C3%A7%C3%A3o-para-atualizar-um-v%C3%ADdeo-pelo-id',
+        descricao: 'descricao'
+      },
+      params: { id: '2b37f2b1-448b-4924-88af-4fae372beb50' }
+    };
+
+    const result = await valitatorSchemaVideo.update(videoData); 
+    expect(result).toEqual(elementExpect);
+  });
+
+  it('Deve ser uma url válida, e id deve ser do tipo UUID', async()=>{
+    const videoData = {
+      body: {
+        titulo: 'Ronaldo test ',
+        url: 'não é uma url',
+        descricao: 'descricao'
+      },
+      params: { id: '2b37f2b1-448b-4924-88af-4fae372beb50 ' }
+    };
+
+    const videoData2 = {
+      body: {
+        titulo: 'Ronaldo test ',
+        url: 'https://trello.com/c/e9pwuV1N/12-requisi%C3%A7%C3%A3o-para-atualizar-um-v%C3%ADdeo-pelo-id ',
+        descricao: 'descricao'
+      },
+      params: { id: '1' }
+    };
+    
+    
+    await expect(valitatorSchemaVideo.update(videoData)).rejects.toThrow('O campo url deve ter um formato válido.');
+    await expect(valitatorSchemaVideo.update(videoData2)).rejects.toThrow('O parâmetros elementId no params deve ser UUID válido.');
+  });
+
+  it('Deve validar se todos os campos são válidos', async()=>{
+    const videoData = {
+      body: {
+        titulo: 'Ronaldo test',
+        url: 'https://trello.com/c/e9pwuV1N/12-requisi%C3%A7%C3%A3o-para-atualizar-um-v%C3%ADdeo-pelo-id',
+        descricao: 'descricao'
+      },
+      params: { id: '2b37f2b1-448b-4924-88af-4fae372beb50' }
+    };
+
+    const result = await valitatorSchemaVideo.update(videoData); 
+    expect(result).toEqual(videoData);
+  });
+
+  
+
+});
