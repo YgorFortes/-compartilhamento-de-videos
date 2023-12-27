@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon ./src/server.js",
-    "test:video:service": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/src/modules/videos/test/services/videoServices.test.js"
+    "test:video:service": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/videos/services/videoServices.test.js",
+    "test:video:validators": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/videos/validators/validatorSchemaVideo.test.js"
   },
   "keywords": [],
   "author": "",

@@ -13,8 +13,8 @@ datasource db {
 model Videos {
   id String @id @default(uuid())
   titulo String  @db.VarChar(255)
-  descricao String @db.VarChar(255)
-  url String @db.VarChar(255)
+  descricao String @db.Text
+  url String @db.VarChar(500)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

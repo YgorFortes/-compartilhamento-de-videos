@@ -40,5 +40,19 @@ export class ValitatorSchemaVideo {
     return result;
   }
 
+  async create (element){
+    const videoSchemaPost = Yup.object({
+      body: Yup.object().shape({
+        titulo: Yup.string().trim().required('O campo titulo é obigatório.'),
+        descricao: Yup.string().trim().required('O campo descricao é obigatório.'),
+        url: Yup.string().trim().url('O campo url deve ter um formato válido.').required('O campo url é obigatório.')
+      })
+    });
+
+    const result = await videoSchemaPost.fields.body.validate(element);
+
+    return result;
+  }
+
 }
 

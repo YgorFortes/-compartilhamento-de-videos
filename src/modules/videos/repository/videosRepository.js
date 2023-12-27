@@ -25,11 +25,14 @@ export class VideosRepository extends CrudRepositoryUtils {
     return this.prismaClient.videos.findMany();
   }
 
-  findOne(elementId){
-    const {id} = elementId;
-    console.log(id);
+  findOne(videoId){
+    const {id} = videoId;
     return this.prismaClient.videos.findUnique({
       where: {id}
     });
+  }
+
+  create(videoData){
+    return this.prismaClient.videos.create({data: videoData});
   }
 }

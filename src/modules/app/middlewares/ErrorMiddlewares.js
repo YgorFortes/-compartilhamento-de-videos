@@ -13,7 +13,7 @@ export class ErrorMiddlewares {
         return res.status(error.statusCode || 500).json({ mensagem: error.message });
       } 
       if (error instanceof Error) {
-        console.log(error);
+        console.error(error.message);
         return res.status(500).json({ mensagem: 'Servidor com problemas! Volte mais tarde.' });
       }
       
