@@ -59,4 +59,8 @@ A API expõe os seguintes *endpoints* a partir da *base URL* `http://localhost:3
 
 `/videos`
 * `GET /videos`
+* `GET /videos/:id`
+* `POST /videos`
+* `PATCH /videos/:id`
+* `DELETE /videos/:id`
 
