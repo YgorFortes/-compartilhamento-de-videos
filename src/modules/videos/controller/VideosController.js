@@ -67,4 +67,18 @@ export class  VideosController extends CrudControllerUtils {
       }
     });
   }
+
+  delete(){
+    this.router.delete('/:id', async(req, res, next)=>{
+      try {
+        const videoId = await this.validatorSchema.delete(req.params);
+        
+        const resultMessageDelete = await this.videoService.delete(videoId);
+        
+        return res.status(200).send({message: resultMessageDelete});
+      } catch (error) {
+        next(error);
+      }
+    });
+  }
 }
