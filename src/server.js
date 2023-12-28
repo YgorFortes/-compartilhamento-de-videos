@@ -7,7 +7,7 @@ class Server {
     this.expressInstence = express();
 
     this.dynamicsRoutes = new DynamicsRoutes();
-
+    this.server = null;
     this.setRoutes();
   }
 
@@ -15,14 +15,29 @@ class Server {
     this.dynamicsRoutes.setupRouter();
     this.dynamicsRoutes.attachRouterToApp(this.expressInstence);
   }
-
+  
   createServer(){
-    const serverPort = process.env.PORT || 3000;
-    this.expressInstence.listen(serverPort, ()=>{
+    const serverPort = process.env.PORT || 3001;
+    this.server=  this.expressInstence.listen(serverPort, ()=>{
       console.log(`Servidor funcionando na porta: http://localhost:${serverPort}/api/v1/ `);
     });
+
+    return this.server;
+  }
+
+  closeServer(){
+    if (this.server) {
+      this.server.close();
+    }
   }
 }
-
 const server = new Server();
-server.createServer();
+if(process.env.TEST === 'false'){
+  server.createServer();
+}
+
+
+export default server;
+
+
+
