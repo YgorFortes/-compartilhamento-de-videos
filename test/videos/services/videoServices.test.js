@@ -283,7 +283,7 @@ describe('Testando  método update de VideoService', ()=>{
   it('Deve atualizar video por seu id', async()=>{
 
     const elementId = {
-      id: '2b37f2b1-448b-4924-88af-4fae372beb50',
+      id: '6076344c-a832-4e57-b6d4-d2949fc1d67d',
     };
 
     const oldVideoInfo ={
@@ -307,10 +307,15 @@ describe('Testando  método update de VideoService', ()=>{
       url: oldVideoInfo.url
     };
 
+    // Criando mock de um findOne 
+    videoRepositoryMock.expects('findOne')
+    .withExactArgs(elementId)
+    .resolves(oldVideoInfo);
+
 
     videoRepositoryMock.expects('update').withExactArgs(elementId, newVideoInfo).resolves(expectedVideoInfo);
-
     const newInfoVideo = await videoService.update(elementId, newVideoInfo);
+    
 
     videoRepositoryMock.verify();
 
@@ -329,7 +334,7 @@ describe('Testando  método update de VideoService', ()=>{
     };
 
 
-    // Criando um findOne com um array vazio
+    // Criando mock de um findOne 
     videoRepositoryMock.expects('findOne')
     .withExactArgs(elementId)
     .resolves(expectedVideo);
@@ -365,6 +370,12 @@ describe('Testando  método update de VideoService', ()=>{
       titulo: oldVideoInfo.titulo,
       url: oldVideoInfo.url
     };
+
+    // Criando mock de um findOne 
+    videoRepositoryMock.expects('findOne')
+    .withExactArgs(elementId)
+    .resolves(oldVideoInfo).twice();
+ 
 
 
     videoRepositoryMock.expects('update').withExactArgs(elementId, newVideoInfo1).resolves(expectedVideoInfo1).twice();
@@ -404,7 +415,11 @@ describe('Testando  método update de VideoService', ()=>{
       url: oldVideoInfo.url
     };
 
-
+     // Criando mock de um findOne 
+     videoRepositoryMock.expects('findOne')
+     .withExactArgs(elementId)
+     .resolves(oldVideoInfo);
+ 
     videoRepositoryMock.expects('update').withExactArgs(elementId, newVideoInfo).resolves(expectedVideoInfo);
 
     
@@ -421,6 +436,69 @@ describe('Testando  método update de VideoService', ()=>{
   
 
   
+});
+
+describe('Testando método delete de VideoService', ()=>{
+  let videoService;
+  let videoRepositoryMock;
+
+  beforeEach(()=>{
+    videoService = new VideoService();
+    videoRepositoryMock = Sinon.mock(videoService.videoRepository);
+  });
+
+  afterEach(()=>{
+    videoRepositoryMock.restore();
+  });
+
+  it('Deve deletar o video', async()=>{
+    const expectedMessage = {
+      message: 'Video deletado com sucesso'
+    };
+    const elementId = {
+      id: 'b0be69fa-ebc1-48dc-9bc7-ef471bda71b8'
+    };
+
+
+    const oldVideoInfo ={
+      ...elementId,
+      descricao: 'descricao teste',
+      titulo: 'titulo teste',
+      url: 'https://www.youtube.com/watch?v=oBB6GMjbiIE&ab_channel=CanalPeeWee'
+    };
+
+    
+    // Criando mock de um findOne 
+    videoRepositoryMock.expects('findOne')
+    .withExactArgs(elementId)
+    .resolves(oldVideoInfo);
+ 
+
+    videoRepositoryMock.expects('delete')
+    .withExactArgs(elementId)
+    .resolves(expectedMessage.message);
+    const result = await videoService.delete(elementId);
+
+    expect(result).toEqual(expectedMessage.message);
+  });
+
+  it('Deve lançar um erro ao não encontrar o video', async()=>{
+   
+    const elementId = {
+      id: 'b0be69fa-ebc1-48dc-9bc7-ef471bda71b8'
+    };
+
+
+    const expectResult = [];
+
+    
+    // Criando mock de um findOne 
+    videoRepositoryMock.expects('findOne')
+    .withExactArgs(elementId)
+    .resolves(expectResult);
+
+    await expect(videoService.delete(elementId)).rejects.toThrow('Video não encontrado.');
+  });
 });
 
 
