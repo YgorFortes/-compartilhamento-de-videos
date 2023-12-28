@@ -16,6 +16,7 @@ export class VideoService extends CrudServiceUtils{
     await this.validatorSchema.findAll(filter);
     
     const videos = await this.videoRepository.findAll(filter);
+
     return videos;
 
    } catch (error) {
@@ -34,6 +35,7 @@ export class VideoService extends CrudServiceUtils{
      }
 
      return video;
+
     } catch (error) {
       throw error;
     }
@@ -50,6 +52,7 @@ export class VideoService extends CrudServiceUtils{
       }
 
       return newVideo;
+
     } catch (error) {
       throw error;
     }
@@ -61,7 +64,6 @@ export class VideoService extends CrudServiceUtils{
       await this.validatorSchema.update({params: videoId, body: videoData});
 
       const video = await this.findOne(videoId);
-
       if(video.length <1){
         throw new CustomError('Video não encontrado.', 404);
       }
@@ -69,6 +71,27 @@ export class VideoService extends CrudServiceUtils{
       const newInfoVideo = await this.videoRepository.update(videoId, videoData);
 
       return newInfoVideo;
+
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async delete(videoId){
+    try {
+      await this.validatorSchema.delete(videoId);
+
+      const video = await this.findOne(videoId);
+      
+      if(video.length <1){
+        throw new CustomError('Video não encontrado.', 404);
+      }
+
+      const result = await this.videoRepository.delete(videoId);
+
+      if(result){
+        return 'Video deletado com sucesso';
+      }
 
     } catch (error) {
       throw error;

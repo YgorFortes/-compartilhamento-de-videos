@@ -215,3 +215,39 @@ describe('Testando o método update de ValitatorSchemaVideo ',  ()=>{
   
 
 });
+
+describe('Testando o método delete de ValitatorSchemaVideo', ()=>{
+  let valitatorSchemaVideo;
+  beforeEach(()=>{
+    valitatorSchemaVideo = new ValitatorSchemaVideo();
+  });
+
+  it('Deve retirar os espaços em branco do params', async()=>{
+    const elementId = {
+      id: 'b0be69fa-ebc1-48dc-9bc7-ef471bda71b8    '
+    };
+
+    const expectElementId = {
+      id: 'b0be69fa-ebc1-48dc-9bc7-ef471bda71b8'
+    };
+
+    const resultado = await valitatorSchemaVideo.delete(elementId);
+    expect(resultado).toEqual(expectElementId);
+  });
+
+  it('O campo elementId do params deve ser um UUID', async()=>{
+    const elementId = {
+      id: 'não é um UUID'
+    };
+
+    await expect(valitatorSchemaVideo.delete(elementId)).rejects.toThrow('O parâmetros elementId no params deve ser UUID válido.');
+  });
+
+  it('O campo elementId do params deve ser obrigatório', async()=>{
+    const elementId = {
+      id: null
+    };
+ 
+    await expect(valitatorSchemaVideo.delete(elementId)).rejects.toThrow('O parâmetros id no params é obigatório.');
+  });
+});
