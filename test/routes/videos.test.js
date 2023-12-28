@@ -83,10 +83,14 @@ describe('POST /videos',()=>{
     const resposta = await request('http://localhost:3000/api/v1/').post('/videos')
     .send(video);
 
+    const videoCriado = resposta.body;
+
     expect(resposta.statusCode).toEqual(201);
     expect(typeof resposta.body).toBe('object');
     expect(resposta.body).toHaveProperty('titulo', 'descricao', 'url');
     expect(resposta.body).toMatchObject(video);
+
+    await request('http://localhost:3000/api/v1/').delete(`/videos/${videoCriado.id}`);
   
   });
 
@@ -126,6 +130,7 @@ describe('PATH /videos', ()=>{
 
     expect(respostaEditar.statusCode).toEqual(200);
     expect(respostaEditar.body.descricao).toEqual(newInfoVideo.descricao);
+    await request('http://localhost:3000/api/v1/').delete(`/videos/${videoCriado.id}`);
   });
 
   it('Deve retornar erro 404', async()=>{
@@ -138,6 +143,37 @@ describe('PATH /videos', ()=>{
     .send(newInfoVideo);
 
     expect(respostaEditar.statusCode).toEqual(404);
+  });
+});
+
+
+describe('DELETE /videos', ()=>{
+  it('Deve deletar o video, mandar status code 200 e uma mensagem de sucesso', async()=>{
+    const video = {
+      titulo: 'titulo',
+      descricao: 'descricao',
+      url: 'https://www.youtube.com/watch?v=w6yGFi0dZeA&ab_channel=AndreOkazaki'
+    };
+  
+    const expectResult = {
+      message: 'Video deletado com sucesso',
+    };
+  
+  
+    const resposta = await request('http://localhost:3000/api/v1/').post('/videos')
+    .send(video);
+    const videoCreated = await resposta.body;
+
+    const responseDelete = await request('http://localhost:3000/api/v1/').delete(`/videos/${videoCreated.id}`);
+
+    expect(responseDelete.body).toEqual(expectResult);
+    expect(responseDelete.statusCode).toEqual(200);
+
+  });
+
+  it('Deve lanaçar um erro status 404', async()=>{
+    const responseDelete = await request('http://localhost:3000/api/v1/').delete(`/videos/6076344c-a832-4e57-b6d4-d2949fc1d67d`);
+    expect(responseDelete.statusCode).toEqual(404);
   });
 });
 
