@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon ./src/server.js",
     "test:video:service": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/videos/services/videoServices.test.js",
-    "test:video:validators": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/videos/validators/validatorSchemaVideo.test.js"
+    "test:video:validators": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/videos/validators/validatorSchemaVideo.test.js",
+    "test:video:routes": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/routes/videos.test"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +19,7 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "prisma": "^5.7.1",
+    "supertest": "^6.3.3",
     "yup": "^1.3.3"
   },
   "devDependencies": {
