@@ -61,5 +61,18 @@ export class ValitatorSchemaVideo {
     return result;
   }
 
+  async delete(videoParams){
+    const videoSchemaFindOne = Yup.object({
+      params: Yup.object().shape({
+        id: Yup.string().trim()
+        .required('O parâmetros id no params é obigatório.')
+        .uuid('O parâmetros elementId no params deve ser UUID válido.')
+      }),
+    });
+
+    const result = await videoSchemaFindOne.fields.params.validate(videoParams);
+    return result;
+  }
+
 }
 
