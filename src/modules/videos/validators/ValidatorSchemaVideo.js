@@ -6,8 +6,8 @@ export class ValitatorSchemaVideo {
   async findAll (videoQuery){
     const videoSchemaFindAll = Yup.object({
       query: Yup.object().shape({
-        titulo: Yup.string().trim(),
-        descricao: Yup.string().trim(),
+        titulo: Yup.string().trim().lowercase(),
+        descricao: Yup.string().trim().lowercase(),
         url: Yup.string().trim().url('A url deve ser valida'),
       })
      
@@ -33,8 +33,8 @@ export class ValitatorSchemaVideo {
   async create (videoData){
     const videoSchemaPost = Yup.object({
       body: Yup.object().shape({
-        titulo: Yup.string().trim().required('O campo titulo é obigatório.'),
-        descricao: Yup.string().trim().required('O campo descricao é obigatório.'),
+        titulo: Yup.string().trim().required('O campo titulo é obigatório.').lowercase(),
+        descricao: Yup.string().trim().required('O campo descricao é obigatório.').lowercase(),
         url: Yup.string().trim().url('O campo url deve ter um formato válido.').required('O campo url é obigatório.')
       })
     });
@@ -51,8 +51,8 @@ export class ValitatorSchemaVideo {
         .uuid('O parâmetros elementId no params deve ser UUID válido.')
       }),
       body: Yup.object().shape({
-        titulo: Yup.string().trim(),
-        descricao: Yup.string().trim(),
+        titulo: Yup.string().trim().lowercase(),
+        descricao: Yup.string().trim().lowercase(),
         url: Yup.string().trim().url('O campo url deve ter um formato válido.')
       }),
     });
