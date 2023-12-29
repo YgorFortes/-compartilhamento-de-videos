@@ -24,4 +24,18 @@ export class CategoryController extends CrudControllerUtils{
       }
     });
   };
+
+  findOne(){
+    this.router.get('/:id', async (req, res, next)=>{
+      try {
+        const categoryId = await this.validatorSchemaCategory.findOne(req.params);
+        
+        const category = await this.categoryService.findOne(categoryId);
+
+        return res.status(200).send(category);
+      } catch (error) {
+        next(error);
+      }
+    });
+  }
 }

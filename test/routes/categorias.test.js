@@ -43,29 +43,30 @@ describe('GET /videos', () => {
     const videos = await resposta.body;
     expect(videos).toEqual([]);
   });
+  
 
-  // it('Deve retorna uma categoria conforme seu id', async()=>{
-  //   const resposta = await request('http://localhost:3000/api/v1/').get('/categorias');
+  it('Deve retorna uma categoria conforme seu id', async()=>{
+    const resposta = await request('http://localhost:3000/api/v1/').get('/categorias');
    
-  //   expect(resposta.status).toBe(200);
-  //   expect(resposta.headers['content-type']).toContain('application/json');
+    expect(resposta.status).toBe(200);
+    expect(resposta.headers['content-type']).toContain('application/json');
 
 
-  //   const categorias = await resposta.body;
+    const categorias = await resposta.body;
 
-  //   const resposta2 = await request('http://localhost:3000/api/v1/').get(`/videos/${categorias[0].id}`);
-  //   const categoria = await resposta2.body;
+    const resposta2 = await request('http://localhost:3000/api/v1/').get(`/videos/${categorias[0].id}`);
+    const categoria = await resposta2.body;
 
-  //   expect(typeof categoria).toBe('object');
+    expect(typeof categoria).toBe('object');
 
-  // });
+  });
 
-  // it('Deve retornar um array vazio', async()=>{
-  //   const resposta = await request('http://localhost:3000/api/v1/').get(`/categorias/795f636b-0fd3-4e74-92ad-afa7a7ea1100`);
-  //   const categoria = await resposta.body;
+  it('Deve retornar um array vazio', async()=>{
+    const resposta = await request('http://localhost:3000/api/v1/').get(`/categorias/795f636b-0fd3-4e74-92ad-afa7a7ea1100`);
+    const categoria = await resposta.body;
 
-  //   expect(resposta.status).toBe(200);
-  //   expect(categoria).toEqual([]);
-  // });
+    expect(resposta.status).toBe(200);
+    expect(categoria).toEqual([]);
+  });
 
 });

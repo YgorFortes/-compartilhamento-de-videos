@@ -16,10 +16,18 @@ export  class CategoryRepository extends CrudRepositoryUtils{
           ]
         }
       });
-    }
+    };
 
     return this.prismaClient.categorias.findMany();
   }
+
+  findOne(categoryId){
+    const {id} = categoryId;
+
+    return this.prismaClient.categorias.findUnique({
+      where: {id}
+    });
+  };
 
 }
 
