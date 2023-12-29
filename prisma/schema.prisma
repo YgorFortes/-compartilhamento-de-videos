@@ -21,6 +21,16 @@ model Videos {
   @@map("videos")
 }
 
+model Categorias {
+  id String @id @default(uuid())
+  titulo String @db.VarChar(255)
+  cor String @db.VarChar(255) 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("categorias")
+}
+
 
 
 

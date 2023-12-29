@@ -2,7 +2,7 @@ import { CrudRepositoryUtils } from "../../../utils/crud/crudRepositoryUtils.js"
 
 export class VideosRepository extends CrudRepositoryUtils {
   
-  async findAll(filter){
+  findAll(filter){
     /* 
       Verify if filter has values in object 
     */
@@ -25,18 +25,18 @@ export class VideosRepository extends CrudRepositoryUtils {
     return this.prismaClient.videos.findMany();
   }
 
-  async findOne(videoId){
+  findOne(videoId){
     const {id} = videoId;
     return this.prismaClient.videos.findUnique({
       where: {id}
     });
   }
 
-  async create(videoData){
+  create(videoData){
     return this.prismaClient.videos.create({data: videoData});
   }
 
-  async update(videoId, videoData){
+  update(videoId, videoData){
     const {id} = videoId;
     return this.prismaClient.videos.update(
       { 
@@ -46,7 +46,7 @@ export class VideosRepository extends CrudRepositoryUtils {
     );
   }
 
-  async delete(videoId){
+  delete(videoId){
     const {id} = videoId;
     return this.prismaClient.videos.delete({
       where: {id}

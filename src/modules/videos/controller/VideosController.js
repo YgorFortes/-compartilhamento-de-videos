@@ -1,5 +1,5 @@
 import { VideoService } from "../services/VideoService.js";
-import CrudControllerUtils from "../../../utils/crud/crudControllerUtils.js";
+import {CrudControllerUtils} from "../../../utils/crud/crudControllerUtils.js";
 import { ValitatorSchemaVideo } from "../validators/ValidatorSchemaVideo.js";
  
 export class  VideosController extends CrudControllerUtils {
