@@ -2,6 +2,8 @@ import { Router , json } from "express";
 import { AppController } from './modules/app/appController.js';
 import { VideosController } from "./modules/videos/controller/VideosController.js";
 import { ErrorMiddlewares } from "./modules/app/middlewares/ErrorMiddlewares.js";
+import { CategoryController } from "./modules/category/controller/CategoryController.js";
+
 // importe os controlers aqui
 
 class dynamicsRoutes {
@@ -24,6 +26,9 @@ class dynamicsRoutes {
     /* Video routes */
     const videosController = new VideosController();
     this.router.use('/videos', videosController.routes());
+
+    const categoryController = new CategoryController();
+    this.router.use('/categorias', categoryController.routes());
 
     const errorMiddlewares = new ErrorMiddlewares();
     this.router.use(errorMiddlewares.handleError());
