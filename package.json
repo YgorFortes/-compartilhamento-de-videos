@@ -9,6 +9,7 @@
     "test:video:service": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/videos/services/videoServices.test.js",
     "test:category:service": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/category/services/categoryServices.test.js",
     "test:video:validators": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/videos/validators/validatorSchemaVideo.test.js",
+    "test:category:validators": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/category/validators/validatorSchemaCategory.test.js",
     "test:video:routes": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/routes/videos.test",
     "test:category:routes": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/routes/categorias.test"
   },
