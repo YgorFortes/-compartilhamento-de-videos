@@ -31,8 +31,9 @@ class Server {
     }
   }
 }
+
 const server = new Server();
-if(process.env.TEST === 'false'){
+if(process.env.TEST_ROUTE === 'false'){
   server.createServer();
 }
 
