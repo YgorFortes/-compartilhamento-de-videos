@@ -78,11 +78,87 @@ describe('Testando método findAl de CategoryService', ()=>{
     const catetegories = await categoryService.findAll(filter);
 
     const endTime =  Date.now();
-    console.log(endTime - startTime);
-    console.time(endTime);
 
     expect(catetegories).toEqual(expectCategories);
     expect(endTime - startTime ).toBeLessThan(1000);
+  });
+});
+
+describe('Testando método findAll de CategoryService',()=>{
+
+  let categoryService;
+  let categoryRepositoryMock;
+  beforeEach(()=>{
+    categoryService = new CategoryService();
+    categoryRepositoryMock = Sinon.mock(categoryService.categoryRepository);
+  });
+
+  afterEach(()=>{
+    categoryRepositoryMock.restore();
+  });
+
+  it('Deve retornar um array vazio caso categoria não seja encontrada', async ()=>{
+    const expectCategories = [];
+    const elementId = {
+      id: '707d4659-db44-464a-8d24-1cabcaed85d3'
+    };
+
+    categoryRepositoryMock.expects('findOne')
+    .withExactArgs(elementId)
+    .resolves(expectCategories);
+
+    const catetegories = await categoryService.findOne(elementId);
+
+    expect(catetegories).toEqual(expectCategories);
+  });
+
+  it('Deve retornar uma categoria conforme seu id', async()=>{
+    const expectedCategory= {
+      id: 'b0be69fa-ebc1-48dc-9bc7-ef471bda71b8',
+      titulo: 'titulo teste',
+      cor: 'cor teste',
+    };
+
+    const elementId = {
+      id: 'b0be69fa-ebc1-48dc-9bc7-ef471bda71b8'
+    };
+
+    categoryRepositoryMock.expects('findOne')
+    .withExactArgs(elementId)
+    .resolves(expectedCategory);
+
+    const video = await categoryService.findOne(elementId);
+
+    expect(video).toEqual(expectedCategory);
+    expect(video.id).toEqual(expectedCategory.id);
+    expect(video).toHaveProperty('id', 'titulo','cor');
+  });
+
+  it('Deve executar dentro de um tempo aceitavél', async()=>{
+    const expectedCategory= {
+      id: 'b0be69fa-ebc1-48dc-9bc7-ef471bda71b8',
+      titulo: 'titulo teste',
+      cor: 'cor teste',
+    };
+
+    const elementId = {
+      id: 'b0be69fa-ebc1-48dc-9bc7-ef471bda71b8'
+    };
+
+    categoryRepositoryMock.expects('findOne')
+    .withExactArgs(elementId)
+    .resolves(expectedCategory);
+
+    const startTime = new Date();
+
+    const video = await categoryService.findOne(elementId);
+
+    const endTime = new Date();
+
+    expect(video).toEqual(expectedCategory);
+    expect(video.id).toEqual(expectedCategory.id);
+    expect(video).toHaveProperty('id', 'titulo','cor');
+    expect(endTime - startTime).toBeLessThan(1000);
   });
 });
 
