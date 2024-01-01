@@ -29,5 +29,26 @@ export  class CategoryRepository extends CrudRepositoryUtils{
     });
   };
 
+  findForTitle(title){
+    return this.prismaClient.categorias.findFirst({
+      where: {titulo: title}
+    });
+  }
+
+  create(newInfoCategory){
+    return this.prismaClient.categorias.create({
+      data: {
+        ...newInfoCategory
+      }
+    });
+  }
+
+  delete(categoryId){
+    const {id} = categoryId;
+    return this.prismaClient.categorias.delete({
+      where: {id}
+    });
+  }
+
 }
 
