@@ -38,4 +38,32 @@ export class CategoryController extends CrudControllerUtils{
       }
     });
   }
+
+  create(){
+    this.router.post('/', async(req, res, next)=>{
+      try {
+        const categoryBody = await this.validatorSchemaCategory.create(req.body);
+
+        const response = await this.categoryService.create(categoryBody);
+
+        return res.status(200).send(response);
+      } catch (error) {
+        next(error);
+      }
+    });
+  }
+
+  delete(){
+    this.router.delete('/:id',async(req, res, next)=>{
+      try {
+        const categoryId = await this.validatorSchemaCategory.delete(req.params);
+
+        const result = await this.categoryService.delete(categoryId);
+
+        return res.status(200).send(result);
+      } catch (error) {
+        next(error);
+      }
+    });
+  }
 }

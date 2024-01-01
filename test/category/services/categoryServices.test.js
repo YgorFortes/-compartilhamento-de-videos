@@ -162,4 +162,167 @@ describe('Testando método findAll de CategoryService',()=>{
   });
 });
 
+describe('Testando método create de CategoryService', ()=>{
+  let categoryService;
+  let categoryRepositoryMock;
+  beforeEach(()=>{
+    categoryService = new CategoryService();
+    categoryRepositoryMock = Sinon.mock(categoryService.categoryRepository);
+  });
 
+  afterEach(()=>{
+    categoryRepositoryMock.restore();
+  });
+
+  it('Deve criar uma nova categoria', async ()=>{
+
+    const expectCategories = {
+      id: 'fb01919e-10b1-46d6-977f-1a0aa5ed218f',
+      titulo: 'Meu titulo',
+      cor: 'Cor nova'
+    };
+
+    const elementBody = {
+      titulo: 'Meu titulo',
+      cor: 'Cor nova'
+    };
+
+    categoryRepositoryMock.expects('create').withExactArgs(elementBody).resolves(expectCategories);
+
+    const newCategory = await categoryService.create(elementBody);
+
+    categoryRepositoryMock.verify();
+
+    expect(newCategory).toEqual(expectCategories);
+  });
+
+  it('Deve impedir de criar uma nova categoria se ela já existe', async()=>{
+    const expectCategories = {
+      id: 'fb01919e-10b1-46d6-977f-1a0aa5ed218f',
+      titulo: 'Meu titulo',
+      cor: 'Cor nova'
+    };
+
+    const elementBody = {
+      titulo: 'Meu titulo',
+      cor: 'Cor nova'
+    };
+
+    const expectedMessage = {
+      message: 'Categoria já existe'
+    };
+
+    categoryRepositoryMock.expects('create').withExactArgs(elementBody).resolves(expectCategories);
+
+    let newCategory;
+
+
+    try {
+      newCategory = await categoryService.create(elementBody);
+
+      categoryRepositoryMock.verify();
+      expect(newCategory).toEqual(expectCategories);
+    } catch (error) {
+      expect(error).toEqual(expectedMessage);
+    }
+   
+  });
+
+  it('Deve executar em um preço aceitavél', async()=>{
+    const expectCategories = {
+      id: 'fb01919e-10b1-46d6-977f-1a0aa5ed218f',
+      titulo: 'Meu titulo',
+      cor: 'Cor nova'
+    };
+
+    const elementBody = {
+      titulo: 'Meu titulo',
+      cor: 'Cor nova'
+    };
+
+    categoryRepositoryMock.expects('create').withExactArgs(elementBody).resolves(expectCategories);
+
+    const startTime = new Date();
+
+    const newCategory = await categoryService.create(elementBody);
+
+    const endTime = new Date();
+
+    categoryRepositoryMock.verify();
+
+    expect(newCategory).toEqual(expectCategories);
+    expect(endTime - startTime).toBeLessThan(1000);
+  });
+});
+
+describe('Testando método delete de CategoryService',()=>{
+  let categoryService;
+  let categoryRepositoryMock;
+  beforeEach(()=>{
+    categoryService = new CategoryService();
+    categoryRepositoryMock = Sinon.mock(categoryService.categoryRepository);
+  });
+
+  afterEach(()=>{
+    categoryRepositoryMock.restore();
+  });
+
+  it('Deve deletar a categoria', async()=>{
+    const expectedMessage = {
+      message: 'Categoria deletado com sucesso'
+    };
+
+    const elementId = {
+      id: 'b0be69fa-ebc1-48dc-9bc7-ef471bda71b8'
+    };
+
+    
+
+    const oldCategoryInfo ={
+      ...elementId,
+      titulo: 'titulo teste',
+      cor: 'cor'
+    };
+
+    // Criando mock de um findOne 
+    categoryRepositoryMock.expects('findOne')
+    .withExactArgs(elementId)
+    .resolves(oldCategoryInfo);
+
+    categoryRepositoryMock.expects('delete')
+    .withExactArgs(elementId)
+    .resolves(expectedMessage.message);
+
+
+    const result = await categoryService.delete(elementId);
+
+    expect(result).toEqual(expectedMessage);
+    
+  });
+
+  it('Deve lançar um erro ao não encontrar o video', async()=>{
+
+    const elementId = {
+      id: 'b0be69fa-ebc1-48dc-9bc7-ef471bda71b8'
+    };
+
+    
+
+    const expectResult = [];
+
+    // Criando mock de um findOne 
+    categoryRepositoryMock.expects('findOne')
+    .withExactArgs(elementId)
+    .resolves(expectResult);
+
+    await expect(categoryService.delete(elementId)).rejects.toThrow('Categoria não encontrado.');
+  });
+
+
+
+});
+
+
+
+
+  

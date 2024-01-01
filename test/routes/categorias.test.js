@@ -12,7 +12,7 @@ afterAll(() => {
   server.closeServer(); // Feche o servidor após todos os testes
 });
 
-describe('GET /videos', () => {
+describe('GET /categorias', () => {
   it('Deve retornar todas as categorias', async () => {
     const resposta = await request('http://localhost:3000/api/v1/').get('/categorias');
    
@@ -69,4 +69,72 @@ describe('GET /videos', () => {
     expect(categoria).toEqual([]);
   });
 
+
+});
+
+describe('/POST em categorias', ()=>{
+  it('Deve retornar uma nova categoria', async()=>{
+    const video = {
+      titulo: 'titulo',
+      cor: 'cor'
+    };
+
+
+    const resposta = await request('http://localhost:3000/api/v1/').post('/categorias').send(video);
+   
+
+
+    expect(resposta.headers['content-type']).toContain('application/json');
+    expect(resposta.status).toBe(200);
+    const novaCategoria = await resposta.body;
+
+   
+    expect(typeof novaCategoria).toBe('object');
+
+    expect(novaCategoria).toHaveProperty('id');
+    expect(novaCategoria).toHaveProperty('titulo');
+    expect(novaCategoria).toHaveProperty('cor');
+
+    const resposta1 = await request('http://localhost:3000/api/v1/').delete(`/categorias/${novaCategoria.id}`).send(video);
+
+    expect(resposta1.status).toBe(200);
+    expect(resposta1.body).toEqual({message: "Categoria deletado com sucesso"});
+  });
+});
+
+describe('/DELETE em categorias', ()=>{
+  it('Deve deletar uma categoria com sucesso', async()=>{
+    const video = {
+      titulo: 'titulo',
+      cor: 'cor'
+    };
+
+
+    const resposta = await request('http://localhost:3000/api/v1/').post('/categorias').send(video);
+   
+
+
+    expect(resposta.headers['content-type']).toContain('application/json');
+    expect(resposta.status).toBe(200);
+    const novaCategoria = await resposta.body;
+
+   
+    expect(typeof novaCategoria).toBe('object');
+
+    expect(novaCategoria).toHaveProperty('id');
+    expect(novaCategoria).toHaveProperty('titulo');
+    expect(novaCategoria).toHaveProperty('cor');
+
+    const resposta1 = await request('http://localhost:3000/api/v1/').delete(`/categorias/${novaCategoria.id}`);
+
+    expect(resposta1.status).toBe(200);
+    expect(resposta1.body).toEqual({message: "Categoria deletado com sucesso"});
+  });
+
+  it('Deve dar um erro 404', async()=>{
+    const resposta1 = await request('http://localhost:3000/api/v1/').delete(`/categorias/fb01919e-10b1-46d6-977f-1a0aa5ed218f`);
+
+    expect(resposta1.status).toBe(404);
+    expect(resposta1.body).toEqual({mensagem: "Categoria não encontrado."});
+  });
 });
