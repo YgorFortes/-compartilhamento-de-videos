@@ -43,6 +43,14 @@ export  class CategoryRepository extends CrudRepositoryUtils{
     });
   }
 
+  update(categoryId, categoryData){
+    const {id} = categoryId;
+    return this.prismaClient.categorias.update({
+      data: categoryData, 
+      where: {id} 
+    });
+  }
+
   delete(categoryId){
     const {id} = categoryId;
     return this.prismaClient.categorias.delete({
