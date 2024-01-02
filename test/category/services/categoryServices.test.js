@@ -4,7 +4,7 @@ import Sinon from 'sinon';
 import { CategoryService } from '../../../src/modules/category/services/CategoryServices.js';
 
 
-describe('Testando método findAl de CategoryService', ()=>{
+describe('Testando método findAll de CategoryService', ()=>{
   let categoryService;
   let categoryRepositoryMock;
   beforeEach(()=>{
@@ -228,7 +228,7 @@ describe('Testando método create de CategoryService', ()=>{
    
   });
 
-  it('Deve executar em um preço aceitavél', async()=>{
+  it('Deve executar em um tempo aceitavél', async()=>{
     const expectCategories = {
       id: 'fb01919e-10b1-46d6-977f-1a0aa5ed218f',
       titulo: 'Meu titulo',
@@ -253,6 +253,160 @@ describe('Testando método create de CategoryService', ()=>{
     expect(newCategory).toEqual(expectCategories);
     expect(endTime - startTime).toBeLessThan(1000);
   });
+});
+
+describe('Testando método update de CategoryService', ()=>{
+  let categoryService;
+  let categoryRepositoryMock;
+  beforeEach(()=>{
+    categoryService = new CategoryService();
+    categoryRepositoryMock = Sinon.mock(categoryService.categoryRepository);
+  });
+
+  afterEach(()=>{
+    categoryRepositoryMock.restore();
+  });
+
+  it('Deve fazer atualizar categoria', async()=>{
+
+    const elementId= {
+      id: 'ae0a60c0-8400-4e32-b923-b36c464a7b34',
+    };
+    
+    const newInfoCategory = {
+      
+      titulo: 'novo titulo atualizado',
+    };
+
+    
+    const oldCategoryInfo = {
+      ...elementId,
+      titulo: 'titulo teste',
+      cor: 'Cor antiga'
+    };
+
+    const expectCategoryUpdate = {
+      id: 'ae0a60c0-8400-4e32-b923-b36c464a7b34',
+      titulo: 'novo titulo atualizado',
+      cor: oldCategoryInfo.cor
+    };
+
+    // Criando mock de findOne
+    categoryRepositoryMock.expects('findOne')
+    .withExactArgs(elementId)
+    .resolves(oldCategoryInfo);
+
+    
+    categoryRepositoryMock.expects('update').withExactArgs(elementId, newInfoCategory).resolves(expectCategoryUpdate);
+
+    const categoryUpdated= await categoryService.update(elementId, newInfoCategory);
+
+    categoryRepositoryMock.verify();
+
+    expect(categoryUpdated).toEqual(expectCategoryUpdate);
+  });
+
+  it('Deve dar erro ao tentar atualizar uma categoria que não existe', async()=>{
+    const elementId= {
+      id: 'ae0a60c0-8400-4e32-b923-b36c464a7b34',
+    };
+    
+  
+    const oldCategoryInfo = [];
+
+    // Criando mock de um findOne 
+    categoryRepositoryMock.expects('findOne')
+    .withExactArgs(elementId)
+    .resolves(oldCategoryInfo);
+
+    await expect(categoryService.update(elementId)).rejects.toThrow('Categoria não encontrado.');
+
+  });
+
+  it('Deve funcionar corretamente quando o método update é chamado várias vezes seguidas', async()=>{
+    
+    const elementId= {
+      id: 'ae0a60c0-8400-4e32-b923-b36c464a7b34',
+    };
+    
+    const newInfoCategory = {
+      
+      titulo: 'novo titulo atualizado',
+    };
+
+    
+    const oldCategoryInfo = {
+      ...elementId,
+      titulo: 'titulo teste',
+      cor: 'Cor antiga'
+    };
+
+    const expectCategoryUpdate = {
+      id: 'ae0a60c0-8400-4e32-b923-b36c464a7b34',
+      titulo: 'novo titulo atualizado',
+      cor: oldCategoryInfo.cor
+    };
+
+    // Criando mock de findOne
+    categoryRepositoryMock.expects('findOne')
+    .withExactArgs(elementId)
+    .resolves(oldCategoryInfo).twice();
+
+    
+    categoryRepositoryMock.expects('update').withExactArgs(elementId, newInfoCategory).resolves(expectCategoryUpdate).twice();
+
+    const categoryUpdated1 = await categoryService.update(elementId, newInfoCategory);
+    const categoryUpdated2 = await categoryService.update(elementId, newInfoCategory);
+
+    categoryRepositoryMock.verify();
+
+    expect(categoryUpdated1).toEqual(expectCategoryUpdate);
+    expect(categoryUpdated2).toEqual(expectCategoryUpdate);
+  });
+
+  it('Deve executar o método update em um tempo aceitável', async()=>{
+    const elementId= {
+      id: 'ae0a60c0-8400-4e32-b923-b36c464a7b34',
+    };
+    
+    const newInfoCategory = {
+      
+      titulo: 'novo titulo atualizado',
+    };
+
+    
+    const oldCategoryInfo = {
+      ...elementId,
+      titulo: 'titulo teste',
+      cor: 'Cor antiga'
+    };
+
+    const expectCategoryUpdate = {
+      id: 'ae0a60c0-8400-4e32-b923-b36c464a7b34',
+      titulo: 'novo titulo atualizado',
+      cor: oldCategoryInfo.cor
+    };
+
+    // Criando mock de findOne
+    categoryRepositoryMock.expects('findOne')
+    .withExactArgs(elementId)
+    .resolves(oldCategoryInfo);
+
+    
+    categoryRepositoryMock.expects('update').withExactArgs(elementId, newInfoCategory).resolves(expectCategoryUpdate);
+
+    const startTime = new Date();
+
+    const categoryUpdated= await categoryService.update(elementId, newInfoCategory);
+
+    const endTime = new Date();
+
+    categoryRepositoryMock.verify();
+
+    expect(categoryUpdated).toEqual(expectCategoryUpdate);
+    expect(endTime - startTime).toBeLessThan(1000);
+  });
+
 });
 
 describe('Testando método delete de CategoryService',()=>{
@@ -306,8 +460,6 @@ describe('Testando método delete de CategoryService',()=>{
       id: 'b0be69fa-ebc1-48dc-9bc7-ef471bda71b8'
     };
 
-    
-
     const expectResult = [];
 
     // Criando mock de um findOne 
@@ -318,9 +470,9 @@ describe('Testando método delete de CategoryService',()=>{
     await expect(categoryService.delete(elementId)).rejects.toThrow('Categoria não encontrado.');
   });
 
-
-
 });
+
+
 
 
 
