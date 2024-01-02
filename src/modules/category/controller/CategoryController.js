@@ -46,7 +46,21 @@ export class CategoryController extends CrudControllerUtils{
 
         const response = await this.categoryService.create(categoryBody);
 
-        return res.status(200).send(response);
+        return res.status(201).send(response);
+      } catch (error) {
+        next(error);
+      }
+    });
+  }
+
+  update(){
+    this.router.patch('/:id', async(req, res, next)=>{
+      try {
+        const categoryData = await this.validatorSchemaCategory.update({params: req.params, body: req.body});
+
+        const catgoryUpdated = await this.categoryService.update(categoryData.params, categoryData.body);
+
+        return res.status(200).send(catgoryUpdated);
       } catch (error) {
         next(error);
       }

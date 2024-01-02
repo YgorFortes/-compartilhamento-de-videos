@@ -54,7 +54,7 @@ export class ValitatorSchemaVideo {
         titulo: Yup.string().trim().lowercase(),
         descricao: Yup.string().trim().lowercase(),
         url: Yup.string().trim().url('O campo url deve ter um formato válido.')
-      }),
+      }).noUnknown(),
     });
 
     const result = await videoSchemaUpdate.validate(videoData);
