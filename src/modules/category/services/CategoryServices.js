@@ -59,6 +59,25 @@ export  class CategoryService extends CrudServiceUtils{
     }
   }
 
+  async update(categoryId, categoryBody){
+    try {
+
+      await this.validatorSchemaCategory.update({params: categoryId, body: categoryBody});
+
+      const CategoryExists = await this.findOne(categoryId);
+
+      if(CategoryExists.length <1 ){
+        throw new CustomError('Categoria não encontrado.', 404);
+      }
+
+      const newInfoCategory = await this.categoryRepository.update(categoryId, categoryBody);
+      
+      return newInfoCategory;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async delete(categoryId){
     try {
       await this.validatorSchemaCategory.delete(categoryId);
