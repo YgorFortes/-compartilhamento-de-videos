@@ -42,6 +42,24 @@ export class ValidatorSchemaCategory{
     return result;
   };
 
+  async update(categoryData){
+    const categorySchemaPatch = Yup.object({
+      body: Yup.object().shape({
+        titulo:  Yup.string().trim().lowercase(),
+        cor: Yup.string().trim().lowercase()
+      }).noUnknown(),
+      params: Yup.object().shape({
+        id: Yup.string().trim()
+        .required('O parâmetros id no params é obigatório.')
+        .uuid('O parâmetros elementId no params deve ser UUID válido.')
+      }),
+    });
+
+    const result = await categorySchemaPatch.validate(categoryData);
+
+    return result;
+  }
+
   async delete(categoryParams){
     const categorySchemaFindOne = Yup.object({
       params: Yup.object().shape({
