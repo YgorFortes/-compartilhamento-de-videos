@@ -78,14 +78,12 @@ describe('/POST em categorias', ()=>{
       titulo: 'titulo',
       cor: 'cor'
     };
-
-
     const resposta = await request('http://localhost:3000/api/v1/').post('/categorias').send(video);
    
 
 
     expect(resposta.headers['content-type']).toContain('application/json');
-    expect(resposta.status).toBe(200);
+    expect(resposta.status).toBe(201);
     const novaCategoria = await resposta.body;
 
    
@@ -95,12 +93,44 @@ describe('/POST em categorias', ()=>{
     expect(novaCategoria).toHaveProperty('titulo');
     expect(novaCategoria).toHaveProperty('cor');
 
-    const resposta1 = await request('http://localhost:3000/api/v1/').delete(`/categorias/${novaCategoria.id}`).send(video);
+    const resposta1 = await request('http://localhost:3000/api/v1/').delete(`/categorias/${novaCategoria.id}`);
 
     expect(resposta1.status).toBe(200);
     expect(resposta1.body).toEqual({message: "Categoria deletado com sucesso"});
   });
 });
+
+describe('/PATCH em categorias', ()=>{
+  it('Deve fazer update de uma categoria com sucesso', async()=>{
+    const categoria = {
+      titulo: 'titulo',
+      cor: 'cor'
+    };
+
+    const novaInforCategoria = {
+      titulo: 'novo titulo'
+    };
+
+    const respostaPost = await request('http://localhost:3000/api/v1/').post('/categorias').send(categoria);
+    
+    
+    expect(respostaPost.headers['content-type']).toContain('application/json');
+    expect(respostaPost.status).toBe(201);
+
+    const respostaPatch = await request('http://localhost:3000/api/v1/').patch(`/categorias/${respostaPost.body.id}`).send(novaInforCategoria);
+
+    expect(respostaPatch.headers['content-type']).toContain('application/json');
+    expect(respostaPatch.status).toBe(200);
+    expect(respostaPatch.body).toHaveProperty('id');
+    expect(respostaPatch.body).toHaveProperty('titulo');
+    expect(respostaPatch.body).toHaveProperty('cor');
+
+
+    expect(respostaPatch.body).toMatchObject ({id: respostaPost.body.id, titulo: novaInforCategoria.titulo, cor: categoria.cor});
+
+    await request('http://localhost:3000/api/v1/').delete(`/categorias/${respostaPatch.id}`);
+  });
+} );
 
 describe('/DELETE em categorias', ()=>{
   it('Deve deletar uma categoria com sucesso', async()=>{
@@ -115,7 +145,7 @@ describe('/DELETE em categorias', ()=>{
 
 
     expect(resposta.headers['content-type']).toContain('application/json');
-    expect(resposta.status).toBe(200);
+    expect(resposta.status).toBe(201);
     const novaCategoria = await resposta.body;
 
    
@@ -138,3 +168,4 @@ describe('/DELETE em categorias', ()=>{
     expect(resposta1.body).toEqual({mensagem: "Categoria não encontrado."});
   });
 });
+
