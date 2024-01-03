@@ -2,12 +2,14 @@ import { VideosRepository } from "../repository/videosRepository.js";
 import { CrudServiceUtils } from "../../../utils/crud/crudServiceUtils.js";
 import { ValitatorSchemaVideo } from "../validators/ValidatorSchemaVideo.js";
 import { CustomError } from "../../app/erros/CustomError.js";
+import { CategoryService } from "../../category/services/CategoryServices.js";
 
 export class VideoService extends CrudServiceUtils{
   constructor(){
     super();
     this.videoRepository = new VideosRepository();
     this.validatorSchema = new ValitatorSchemaVideo();
+    this.categoriaService = new CategoryService();
   }
 
   async findAll(filter){
@@ -44,6 +46,9 @@ export class VideoService extends CrudServiceUtils{
   async create(videoData){
     try {
       await this.validatorSchema.create(videoData);
+
+      await this.categoryExist(videoData);
+
       
       const newVideo = await this.videoRepository.create(videoData);
 
@@ -64,9 +69,12 @@ export class VideoService extends CrudServiceUtils{
       await this.validatorSchema.update({params: videoId, body: videoData});
 
       const video = await this.findOne(videoId);
+
       if(video.length <1){
         throw new CustomError('Video não encontrado.', 404);
       }
+
+      await this.categoryExist(videoData);
 
       const newInfoVideo = await this.videoRepository.update(videoId, videoData);
 
@@ -96,6 +104,23 @@ export class VideoService extends CrudServiceUtils{
     } catch (error) {
       throw error;
     }
+  }
+
+  async categoryExist(videoData){
+    const {categoriaId} = videoData;
+    try {
+      if(categoriaId) {
+        const category = await this.categoriaService.findOne({id: categoriaId});
+  
+        if(category.length <1){
+          throw new CustomError('Categoria não encontrado.', 404);
+        }
+      }
+      
+    } catch (error) {
+      throw error;
+    }
+
   }
 
 }

@@ -35,6 +35,22 @@ export  class CategoryRepository extends CrudRepositoryUtils{
     });
   }
 
+  findVideosByCategory(categoryId){
+    return this.prismaClient.categorias.findMany({
+      where: {id: categoryId},
+      include: {
+        videos: {
+          select: {
+            id: true,
+            titulo: true,
+            descricao: true,
+            url: true
+          }
+        },
+      },
+    });
+  }
+
   create(newInfoCategory){
     return this.prismaClient.categorias.create({
       data: {

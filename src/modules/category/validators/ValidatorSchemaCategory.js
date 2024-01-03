@@ -28,6 +28,19 @@ export class ValidatorSchemaCategory{
     return result;
   }
 
+  async findVideosByCategory(videoId){
+    const categorySchemaFindOne = Yup.object({
+      params: Yup.object().shape({
+        id: Yup.string().trim()
+        .required('O parâmetro  videoId no params é obigatório.')
+        .uuid('O parâmetros videoId no params deve ser UUID válido.')
+      }),
+    });
+
+    const result = await categorySchemaFindOne.fields.params.validate(videoId);
+    return result.id;
+  }
+
   async create(categoryBody){
     const categorySchemaCreate = Yup.object({
       body: Yup.object().shape({

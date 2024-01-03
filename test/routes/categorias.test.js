@@ -74,11 +74,11 @@ describe('GET /categorias', () => {
 
 describe('/POST em categorias', ()=>{
   it('Deve retornar uma nova categoria', async()=>{
-    const video = {
+    const categoria = {
       titulo: 'titulo',
       cor: 'cor'
     };
-    const resposta = await request('http://localhost:3000/api/v1/').post('/categorias').send(video);
+    const resposta = await request('http://localhost:3000/api/v1/').post('/categorias').send(categoria);
    
 
 

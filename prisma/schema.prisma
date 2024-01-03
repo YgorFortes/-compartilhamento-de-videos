@@ -17,7 +17,9 @@ model Videos {
   url String @db.VarChar(500)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  categoriaId String
 
+  categoria Categorias @relation(fields: [categoriaId], references: [id])
   @@map("videos")
 }
 
@@ -27,7 +29,7 @@ model Categorias {
   cor String @db.VarChar(255) 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
+  videos Videos []
   @@map("categorias")
 }
 

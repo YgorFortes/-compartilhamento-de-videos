@@ -8,7 +8,9 @@ export class CategoryController extends CrudControllerUtils{
     super();
     this.categoryService = new CategoryService();
     this.validatorSchemaCategory = new ValidatorSchemaCategory();
+    this.setupRouter(this.findVideosByCategory());
   }
+
 
   findAll(){
     this.router.get('/', async (req, res, next )=>{
@@ -38,15 +40,30 @@ export class CategoryController extends CrudControllerUtils{
       }
     });
   }
+  
+  findVideosByCategory(){
+    this.router.get('/:id/videos', async(req, res, next)=>{
+     try {
+      const categoryId = await this.validatorSchemaCategory.findVideosByCategory(req.params);
+      
+      const VideoByCategory = await this.categoryService.findVideosByCategory(categoryId);
+
+      return res.status(200).send(VideoByCategory);
+      
+     } catch (error) {
+      next(error);
+     }
+    });
+  }
 
   create(){
     this.router.post('/', async(req, res, next)=>{
       try {
         const categoryBody = await this.validatorSchemaCategory.create(req.body);
 
-        const response = await this.categoryService.create(categoryBody);
+        const newCategory = await this.categoryService.create(categoryBody);
 
-        return res.status(201).send(response);
+        return res.status(201).send(newCategory);
       } catch (error) {
         next(error);
       }
