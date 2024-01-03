@@ -21,10 +21,8 @@ export  class CategoryService extends CrudServiceUtils{
     }
   }
 
-
   async findOne(categoryId){
     try {
-
       await this.validatorSchemaCategory.findOne(categoryId);
 
       const category = await this.categoryRepository.findOne(categoryId);
@@ -35,6 +33,18 @@ export  class CategoryService extends CrudServiceUtils{
       }
 
       return category;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findVideosByCategory(categoryId){
+    try {
+      await this.validatorSchemaCategory.findVideosByCategory({id: categoryId});
+
+      const videoByCategory = await this.categoryRepository.findVideosByCategory(categoryId);
+  
+      return {categoria: videoByCategory};
     } catch (error) {
       throw error;
     }
