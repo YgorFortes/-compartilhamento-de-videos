@@ -108,4 +108,19 @@ export  class CategoryService extends CrudServiceUtils{
       throw error;
     }
   }
+
+  async findOrCreateTitle(categoryTitle){
+    try {
+      const category = await this.categoryRepository.findForTitle(categoryTitle);
+
+      if(!category){
+        const newCategory = await this.categoryRepository.create({titulo: categoryTitle, cor: 'cor'});
+        return newCategory;
+      }
+
+      return category;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
