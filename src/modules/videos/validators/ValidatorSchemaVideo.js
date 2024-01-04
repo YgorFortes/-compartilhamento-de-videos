@@ -36,7 +36,7 @@ export class ValitatorSchemaVideo {
         titulo: Yup.string().trim().required('O campo titulo é obigatório.').lowercase(),
         descricao: Yup.string().trim().required('O campo descricao é obigatório.').lowercase(),
         url: Yup.string().trim().url('O campo url deve ter um formato válido.').required('O campo url é obigatório.'),
-        categoriaId: Yup.string().trim().required('O campo categoriaId é obrigatório.'),
+        categoriaId: Yup.string().trim(),
       })
     });
 
