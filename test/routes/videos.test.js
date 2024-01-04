@@ -175,6 +175,42 @@ describe('PATH /videos', ()=>{
     await request('http://localhost:3000/api/v1/').delete(`/categorias/${novaCategoria.id}`);
   });
 
+  it('De dar erro 404 quando não encontrado categoria', async()=>{
+    const categoria = {
+      titulo: 'titulo',
+      cor: 'cor'
+    };
+    
+    const respostaCategoria = await request('http://localhost:3000/api/v1/').post('/categorias').send(categoria);
+
+    const novaCategoria = await respostaCategoria.body;
+
+    const video = {
+      titulo: 'titulo',
+      descricao: 'descricao',
+      url: 'https://www.youtube.com/watch?v=w6yGFi0dZeA&ab_channel=AndreOkazaki',
+      categoriaId: novaCategoria.id
+    };
+
+    const newInfoVideo= {
+      categoriaId: '06dbddc5-efc7-45b6-bebd-0b8debd041d1',
+    };
+
+
+    const resposta = await request('http://localhost:3000/api/v1/').post('/videos')
+    .send(video);
+
+    const videoCriado = await resposta.body;
+
+    const respostaEditar = await request('http://localhost:3000/api/v1/').patch(`/videos/${videoCriado.id}`)
+    .send(newInfoVideo);
+
+    expect(respostaEditar.statusCode).toEqual(404);
+    expect(respostaEditar.body.descricao).toEqual(newInfoVideo.descricao);
+    await request('http://localhost:3000/api/v1/').delete(`/videos/${videoCriado.id}`);
+    await request('http://localhost:3000/api/v1/').delete(`/categorias/${novaCategoria.id}`);
+  });
+
   it('Deve retornar erro 404', async()=>{
 
     const newInfoVideo= {
