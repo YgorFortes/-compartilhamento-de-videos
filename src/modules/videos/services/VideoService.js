@@ -47,10 +47,10 @@ export class VideoService extends CrudServiceUtils{
     try {
       await this.validatorSchema.create(videoData);
 
-      await this.categoryExist(videoData);
-
+      const videoDataWithCategory = await this.verifyOrCreateCategoryForVideo(videoData);
+    
       
-      const newVideo = await this.videoRepository.create(videoData);
+      const newVideo = await this.videoRepository.create(videoDataWithCategory);
 
       if(!newVideo){
         throw CustomError('Não foi possível cadastrar o video', );
@@ -64,6 +64,7 @@ export class VideoService extends CrudServiceUtils{
   }
 
   async update(videoId, videoData){
+    const {categoriaId} = videoData;
     try {
 
       await this.validatorSchema.update({params: videoId, body: videoData});
@@ -74,7 +75,7 @@ export class VideoService extends CrudServiceUtils{
         throw new CustomError('Video não encontrado.', 404);
       }
 
-      await this.categoryExist(videoData);
+      await this.verifyCategoryById(categoriaId);
 
       const newInfoVideo = await this.videoRepository.update(videoId, videoData);
 
@@ -106,21 +107,31 @@ export class VideoService extends CrudServiceUtils{
     }
   }
 
-  async categoryExist(videoData){
+  async verifyOrCreateCategoryForVideo(videoData){
     const {categoriaId} = videoData;
     try {
-      if(categoriaId) {
-        const category = await this.categoriaService.findOne({id: categoriaId});
-  
-        if(category.length <1){
-          throw new CustomError('Categoria não encontrado.', 404);
-        }
+      if(!categoriaId) {
+        const titleFree = await this.categoriaService.findOrCreateTitle('livre');
+        return {...videoData, categoriaId: titleFree.id};
       }
+
+      await this.verifyCategoryById(categoriaId);
       
+      return videoData;
     } catch (error) {
       throw error;
     }
+  }
 
+  async verifyCategoryById(categoriaId){
+    if(categoriaId){
+    
+      const category = await this.categoriaService.findOne({id: categoriaId});
+
+      if(category.length <1){
+        throw new CustomError('Categoria não encontrado.', 404);
+      }
+    }
   }
 
 }
