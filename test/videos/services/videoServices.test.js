@@ -175,17 +175,17 @@ describe('Testando método findOne de VideoService', ()=>{
 describe('Testando método create de VideoService',()=>{
   let videoService;
   let videoRepositoryMock;
-  let mockCategoryExist;
+  let verifyOrCreateCategoryForVideo;
 
   beforeEach(()=>{
     videoService = new VideoService();
     videoRepositoryMock = Sinon.mock(videoService.videoRepository);
-    mockCategoryExist =Sinon.mock(videoService);
+    verifyOrCreateCategoryForVideo =Sinon.mock(videoService);
   });
   
   afterEach(()=>{
     videoRepositoryMock.restore();
-    mockCategoryExist.restore();
+    verifyOrCreateCategoryForVideo.restore();
   });
 
   it('Deve criar um novo vídeo', async()=>{
@@ -205,9 +205,41 @@ describe('Testando método create de VideoService',()=>{
       categoriaId: '2bc9fa64-97c7-476d-a6de-91f4e93bfdf9'
     };
 
-    mockCategoryExist.expects('categoryExist').withExactArgs(element).resolves();
+    verifyOrCreateCategoryForVideo.expects('verifyOrCreateCategoryForVideo').withExactArgs(element).resolves(element);
 
     videoRepositoryMock.expects('create').withExactArgs(element).resolves(expectNewVideo);
+
+    const newVideo = await videoService.create(element);
+ 
+    videoRepositoryMock.verify();
+
+    expect(newVideo).toEqual(expectNewVideo);
+  });
+
+  it('Deve criar uma categoria chamada livre quando não colocado categoriaId', async()=>{
+    const element = {
+      descricao: 'descricao teste',
+      titulo: 'titulo teste',
+      url: 'https://www.youtube.com/watch?v=oBB6GMjbiIE&ab_channel=CanalPeeWee',
+    };
+
+    const expectCategoryFree = {
+      titulo: 'livre',
+      cor: 'cor'
+    };
+
+
+    const expectNewVideo = {
+      id: '2b37f2b1-448b-4924-88af-4fae372beb50',
+      descricao: 'descricao teste',
+      titulo: 'titulo teste',
+      url: 'https://www.youtube.com/watch?v=oBB6GMjbiIE&ab_channel=CanalPeeWee',
+      categoriaId: expectCategoryFree.id
+    };
+
+    verifyOrCreateCategoryForVideo.expects('verifyOrCreateCategoryForVideo').withExactArgs(element).resolves({...element, categoriaId: expectCategoryFree.id});
+
+    videoRepositoryMock.expects('create').withExactArgs({...element, categoriaId: undefined}).resolves(expectNewVideo);
 
     const newVideo = await videoService.create(element);
  
@@ -220,7 +252,7 @@ describe('Testando método create de VideoService',()=>{
     const element = undefined;
 
     
-    await expect(videoService.create(element)).rejects.toThrow('O campo categoriaId é obrigatório.');
+    await expect(videoService.create(element)).rejects.toThrow('O campo url é obigatório.');
   });
 
   it('Deve funcionar corretamente quando o método create é chamado várias vezes seguidas', async()=>{
@@ -236,7 +268,7 @@ describe('Testando método create de VideoService',()=>{
       ...element
     };
 
-    mockCategoryExist.expects('categoryExist').withExactArgs(element).resolves().twice();
+    verifyOrCreateCategoryForVideo.expects('verifyOrCreateCategoryForVideo').withExactArgs(element).resolves(element).twice();
 
 
     videoRepositoryMock.expects('create').withExactArgs(element).resolves(expectNewVideo).twice();;
@@ -263,7 +295,10 @@ describe('Testando método create de VideoService',()=>{
       id: '2b37f2b1-448b-4924-88af-4fae372beb50',
       ...element
     };
-    mockCategoryExist.expects('categoryExist').withExactArgs(element).resolves();
+
+
+
+    verifyOrCreateCategoryForVideo.expects('verifyOrCreateCategoryForVideo').withExactArgs(element).resolves(element);
 
     videoRepositoryMock.expects('create').withExactArgs(element).resolves(expectNewVideo);
 
@@ -287,11 +322,11 @@ describe('Testando método create de VideoService',()=>{
   
     const error = new Error('Categoria não encontrado.');
   
-    mockCategoryExist.expects('categoryExist').withExactArgs(videoData).throws(error);
+    verifyOrCreateCategoryForVideo.expects('verifyOrCreateCategoryForVideo').withExactArgs(videoData).throws(error);
   
     await expect(videoService.create(videoData)).rejects.toThrow(error);
   
-    mockCategoryExist.verify();
+    verifyOrCreateCategoryForVideo.verify();
   });
 
 
@@ -301,12 +336,12 @@ describe('Testando  método update de VideoService', ()=>{
 
   let videoService;
   let videoRepositoryMock;
-  let mockCategoryExist;
+  let verifyCategoryById;
 
   beforeEach(()=>{
     videoService = new VideoService();
     videoRepositoryMock = Sinon.mock(videoService.videoRepository);
-    mockCategoryExist =Sinon.mock(videoService);
+    verifyCategoryById =Sinon.mock(videoService);
   });
   
   afterEach(()=>{
@@ -319,6 +354,7 @@ describe('Testando  método update de VideoService', ()=>{
     const elementId = {
       id: '6076344c-a832-4e57-b6d4-d2949fc1d67d',
     };
+    
 
     const oldVideoInfo ={
       ...elementId,
@@ -333,7 +369,7 @@ describe('Testando  método update de VideoService', ()=>{
       descricao: 'nova descricao atualizada',
     };
 
-    mockCategoryExist.expects('categoryExist').withExactArgs(newVideoInfo).resolves();
+    verifyCategoryById.expects('verifyCategoryById').withExactArgs(undefined).resolves();
 
     const expectedVideoInfo ={
       ...elementId,
@@ -356,6 +392,59 @@ describe('Testando  método update de VideoService', ()=>{
 
     expect(newInfoVideo).toEqual(expectedVideoInfo);
   });
+
+  it('Deve atualizar a categoriaId de videos', async()=>{
+    const elementId = {
+      id: '6076344c-a832-4e57-b6d4-d2949fc1d67d',
+    };
+
+    const categoriId = {
+      id: 'cdb433c3-8f83-4449-b2cb-6e2d354e50cf'
+    };
+    
+
+    const oldVideoInfo ={
+      ...elementId,
+      descricao: 'descricao teste',
+      titulo: 'titulo teste',
+      url: 'https://www.youtube.com/watch?v=oBB6GMjbiIE&ab_channel=CanalPeeWee',
+      categoriId:'aba2155c-98bb-4d0a-9e9f-3fc971ee200c'
+    };
+
+    
+
+    const newVideoInfo = {
+      categoriId: categoriId.id
+    };
+
+    
+    
+    const expectedVideoInfo ={
+      ...elementId,
+      ...newVideoInfo,
+      titulo: oldVideoInfo.titulo,
+      url: oldVideoInfo.url,
+      descricao: oldVideoInfo.descricao
+    };
+    
+    // Criando mock de um findOne 
+    videoRepositoryMock.expects('findOne')
+    .withExactArgs(elementId)
+    .resolves(oldVideoInfo);
+    
+    
+    
+    videoRepositoryMock.expects('update').withExactArgs(elementId, newVideoInfo).resolves(expectedVideoInfo);
+    
+    const newInfoVideo = await videoService.update(elementId, newVideoInfo);
+    
+
+    videoRepositoryMock.verify();
+    verifyCategoryById.verify();
+
+    expect(newInfoVideo).toEqual(expectedVideoInfo);
+  });
+
 
   it('Deve lançar um erro quando não encontrado video', async() =>{
     const expectedVideo = [];
@@ -406,7 +495,7 @@ describe('Testando  método update de VideoService', ()=>{
       url: oldVideoInfo.url,
     };
 
-    mockCategoryExist.expects('categoryExist').withExactArgs(newVideoInfo1).resolves().twice();
+    verifyCategoryById.expects('verifyCategoryById').withExactArgs(undefined).resolves().twice();
 
     // Criando mock de um findOne 
     videoRepositoryMock.expects('findOne')
@@ -457,7 +546,7 @@ describe('Testando  método update de VideoService', ()=>{
     .withExactArgs(elementId)
     .resolves(oldVideoInfo);
 
-    mockCategoryExist.expects('categoryExist').withExactArgs(newVideoInfo).resolves();
+    verifyCategoryById.expects('verifyCategoryById').withExactArgs(undefined).resolves();
  
     videoRepositoryMock.expects('update').withExactArgs(elementId, newVideoInfo).resolves(expectedVideoInfo);
 
@@ -499,12 +588,13 @@ describe('Testando  método update de VideoService', ()=>{
 
 
     const error = new Error('Categoria não encontrado.');
+    await expect(videoService.verifyCategoryById(elementId.id)).rejects.toThrow(error);
+    
   
-    mockCategoryExist.expects('categoryExist').withExactArgs(newVideoInfo).throws(error);
   
     await expect(videoService.update(elementId, newVideoInfo)).rejects.toThrow(error);
   
-    mockCategoryExist.verify();
+    verifyCategoryById.verify();
   });
 
   
