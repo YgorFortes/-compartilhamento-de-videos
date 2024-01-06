@@ -11,9 +11,22 @@ export  class CategoryService extends CrudServiceUtils{
     this.validatorSchemaCategory = new ValidatorSchemaCategory();
   }
 
-  async findAll(filter){
+  async findAll(filters){
+    const {page} = filters;
     try {
-      const category = await this.categoryRepository.findAll(filter);
+      await this.validatorSchemaCategory.findAll(filters);
+
+      const hasFilter = this.checkFilterProperties(filters);
+
+      if(hasFilter){
+        return this.categoryRepository.findVideosByFilters(filters);
+      }
+
+      if(page){
+        return this.categoryRepository.pagination(page);
+      }
+
+      const category = await this.categoryRepository.findAll();
 
       return category;
     } catch (error) {
@@ -93,7 +106,7 @@ export  class CategoryService extends CrudServiceUtils{
       await this.validatorSchemaCategory.delete(categoryId);
 
       const category = await this.findOne(categoryId);
-
+      
       if(category.length <1){
         throw new CustomError('Categoria não encontrado.', 404);
       }
@@ -101,7 +114,7 @@ export  class CategoryService extends CrudServiceUtils{
       const result = await this.categoryRepository.delete(categoryId);
 
       if(result){
-        return {message: 'Categoria deletado com sucesso'};
+        return {mensagem: 'Categoria deletado com sucesso'};
       }
 
     } catch (error) {
@@ -122,5 +135,21 @@ export  class CategoryService extends CrudServiceUtils{
     } catch (error) {
       throw error;
     }
+  }
+
+  checkFilterProperties(filters) {
+
+    /* 
+      Verify if proprities descricao, titulo or url is put in query 
+    */
+
+    const hasFilter = Object.keys(filters).filter((filter)=> {
+      if(filter === 'titulo' || filter === 'cor'){
+        return true;
+      }
+      return false;
+    }).length >0;
+
+    return hasFilter;
   }
 }
