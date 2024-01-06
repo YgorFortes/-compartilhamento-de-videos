@@ -2,26 +2,7 @@ import { CrudRepositoryUtils } from "../../../utils/crud/crudRepositoryUtils.js"
 
 export class VideosRepository extends CrudRepositoryUtils {
   
-  findAll(filter){
-    /* 
-      Verify if filter has values in object 
-    */
-    const hasFilter = Object.values(filter).length > 0;
-
-    if(hasFilter){
-      const {descricao, titulo, url} = filter;
-    
-      return this.prismaClient.videos.findMany({
-        where: {
-          OR: [
-            { descricao: { contains: descricao } },
-            { titulo: { contains: titulo } },
-            { url: { contains: url } }
-          ]
-        }
-      });
-    }
-
+  findAll(){
     return this.prismaClient.videos.findMany();
   }
 
@@ -52,5 +33,26 @@ export class VideosRepository extends CrudRepositoryUtils {
       where: {id}
     });
   }
-  
+
+  pagination(pageNumber){
+    return this.prismaClient.videos.findMany({
+      take: Number(5), // quantity of itens for page
+      skip: (Number(pageNumber) - 1) * Number(5), // skip the itens of previous pages
+    });
+  }
+
+  findVideosByFilters(filters){
+    const {descricao, titulo, url} = filters;
+    return this.prismaClient.videos.findMany({
+      where: {
+        OR: [
+          { descricao: { contains: descricao } },
+          { titulo: { contains: titulo } },
+          { url: { contains: url } }
+        ]
+      }
+    });
+  }
+
+ 
 }
