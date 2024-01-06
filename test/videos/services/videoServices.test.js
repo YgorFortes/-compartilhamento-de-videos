@@ -21,8 +21,8 @@ describe('Testando método findAll de VideoService', ()=>{
     videoRepositoryMock.restore();
   });
 
-  it('Deve chamar todos os videos se filtro estiver undefined',async ()=>{
-    const filter = {titulo: undefined};
+  it('Deve chamar todos os videos se filtro estiver com objeto vazio',async ()=>{
+    const filter = {};
 
     const expectedVideos = [
       {id: 1, titulo: 'teste', descricao: 'descrição teste', url: 'url teste'},
@@ -31,7 +31,7 @@ describe('Testando método findAll de VideoService', ()=>{
 
 
     videoRepositoryMock.expects('findAll')
-    .withExactArgs(filter)
+    .withExactArgs()
     .resolves(expectedVideos);
 
     const videos = await videoService.findAll(filter);
@@ -51,7 +51,7 @@ describe('Testando método findAll de VideoService', ()=>{
     const expectedVideos = allVideos.filter(video => video.titulo.includes(filter.titulo));
 
 
-    videoRepositoryMock.expects('findAll')
+    videoRepositoryMock.expects('findVideosByFilters')
     .withExactArgs(filter)
     .resolves(expectedVideos);
 
@@ -61,7 +61,7 @@ describe('Testando método findAll de VideoService', ()=>{
     expect(videos).toEqual(expectedVideos);
   });
 
-  it('Deve executar dentro de um tempo aceitavél', async()=>{
+  it('Deve executar o busca com filtro dentro de um tempo aceitável', async()=>{
 
     const filter = {titulo: 'teste'};
 
@@ -72,20 +72,67 @@ describe('Testando método findAll de VideoService', ()=>{
     ];
 
     const expectedVideos = allVideos.filter(video => video.titulo.includes(filter.titulo));
+   
 
 
-    videoRepositoryMock.expects('findAll')
+    videoRepositoryMock.expects('findVideosByFilters')
     .withExactArgs(filter)
     .resolves(expectedVideos);
 
     const startTime =  Date.now();
 
-    const newVideo = await videoService.findAll(filter);
-
+    const videos = await videoService.findAll(filter);
+  
+    
+    videoRepositoryMock.verify();
     const endTime =  Date.now();
+   
 
-    expect(newVideo).toEqual(expectedVideos);
-    expect(endTime - startTime).toBeLessThan(1000); 
+    expect(endTime - startTime).toBeLessThan(1000);
+    expect(videos).toEqual(expectedVideos);
+  });
+
+  it('Deve fazer paginação de 5 itens por vez, e deve executar em um tempo aceitável ', async()=>{
+    const filter = {page: 3};
+    const {page} = filter;
+
+    const itemsPerPage = 5;
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    const allVideos = [
+      {id: 1, titulo: 'teste', descricao: 'descrição teste', url: 'url teste'},
+      {id: 2, titulo: 'teste 2', descricao: 'descrição test 2', url: 'url teste 2' },
+      {id: 3, titulo: 'novo titulo', descricao: 'nova descricao', url: 'nova url' },
+      {id: 4, titulo: 'novo titulo', descricao: 'nova descricao', url: 'nova url' },
+      {id: 5, titulo: 'novo titulo', descricao: 'nova descricao', url: 'nova url' },
+      {id: 6, titulo: 'novo titulo', descricao: 'nova descricao', url: 'nova url' },
+      {id: 7, titulo: 'novo titulo', descricao: 'nova descricao', url: 'nova url' },
+      {id: 8, titulo: 'novo titulo', descricao: 'nova descricao', url: 'nova url' },
+      {id: 9, titulo: 'novo titulo', descricao: 'nova descricao', url: 'nova url' },
+      {id: 10, titulo: 'novo titulo', descricao: 'nova descricao', url: 'nova url' },
+      {id: 11, titulo: 'novo titulo', descricao: 'nova descricao', url: 'nova url' },
+      {id: 12, titulo: 'novo titulo', descricao: 'nova descricao', url: 'nova url' }
+    ];
+   
+    const expectedVideos = allVideos.slice(startIndex, endIndex);
+
+    videoRepositoryMock.expects('pagination')
+    .withExactArgs(page)
+    .resolves(expectedVideos);
+
+    const startTime =  Date.now();
+
+    const videos = await videoService.findAll(filter);
+  
+    
+    videoRepositoryMock.verify();
+    const endTime =  Date.now();
+   
+
+    expect(endTime - startTime).toBeLessThan(1000);
+    expect(videos).toEqual(expectedVideos);
+    expect(videos.length).toEqual(expectedVideos.length);
   });
 });
 
@@ -114,7 +161,7 @@ describe('Testando método findOne de VideoService', ()=>{
     .withExactArgs(elementId)
     .resolves(expectedVideo);
 
-    const video = await videoService.findAll(elementId);
+    const video = await videoService.findOne(elementId);
 
     expect(video).toEqual(expectedVideo);
   });
@@ -141,7 +188,7 @@ describe('Testando método findOne de VideoService', ()=>{
     expect(video.id).toEqual(expectedVideo.id);
   });
 
-  it('Deve executar dentro de um tempo aceitavél', async() =>{
+  it('Deve executar dentro de um tempo aceitável', async() =>{
     const expectedVideo = {
       id: 'b0be69fa-ebc1-48dc-9bc7-ef471bda71b8',
       titulo: 'titulo teste',
@@ -167,8 +214,6 @@ describe('Testando método findOne de VideoService', ()=>{
     expect(video.id).toEqual(expectedVideo.id);
     expect(endTime - startTime).toBeLessThan(1000); 
   });
-
- 
 
 });
 
@@ -283,7 +328,7 @@ describe('Testando método create de VideoService',()=>{
   });
   
 
-  it('Deve executar dentro de um tempo aceitavél', async()=>{
+  it('Deve executar dentro de um tempo aceitável', async()=>{
     const element = {
       descricao: 'descricao teste',
       titulo: 'titulo teste',
@@ -515,7 +560,7 @@ describe('Testando  método update de VideoService', ()=>{
     expect(newVideo2).toEqual(expectedVideoInfo1);
   });
 
-  it('Deve executar dentro de um tempo aceitavél', async()=>{
+  it('Deve executar dentro de um tempo aceitável', async()=>{
 
     const elementId = {
       id: '2b37f2b1-448b-4924-88af-4fae372beb50',
@@ -597,7 +642,7 @@ describe('Testando  método update de VideoService', ()=>{
     verifyCategoryById.verify();
   });
 
-  
+
 });
 
 describe('Testando método delete de VideoService', ()=>{
@@ -615,7 +660,7 @@ describe('Testando método delete de VideoService', ()=>{
 
   it('Deve deletar o video', async()=>{
     const expectedMessage = {
-      message: 'Video deletado com sucesso'
+      mensagem: 'Video deletado com sucesso'
     };
     const elementId = {
       id: 'b0be69fa-ebc1-48dc-9bc7-ef471bda71b8'
@@ -638,10 +683,10 @@ describe('Testando método delete de VideoService', ()=>{
 
     videoRepositoryMock.expects('delete')
     .withExactArgs(elementId)
-    .resolves(expectedMessage.message);
+    .resolves(expectedMessage);
     const result = await videoService.delete(elementId);
 
-    expect(result).toEqual(expectedMessage.message);
+    expect(result).toEqual(expectedMessage);
   });
 
   it('Deve lançar um erro ao não encontrar o video', async()=>{
