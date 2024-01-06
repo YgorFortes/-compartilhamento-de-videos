@@ -16,8 +16,8 @@ describe('Testando método findAll de CategoryService', ()=>{
     categoryRepositoryMock.restore();
   });
 
-  it('Deve chamar todos as categorias se filtro estiver undefined', async()=>{
-    const filter = undefined;
+  it('Deve chamar todos as categorias se filtro estiver vazio', async()=>{
+    const filter = {};
 
     const expectCategories = [
       { id: 1, titulo: 'Titulo teste', cor: 'azul' },
@@ -26,7 +26,7 @@ describe('Testando método findAll de CategoryService', ()=>{
     ];
 
     categoryRepositoryMock.expects('findAll')
-    .withExactArgs(filter)
+    .withExactArgs()
     .resolves(expectCategories);
     
     const categories = await categoryService.findAll(filter);
@@ -48,7 +48,7 @@ describe('Testando método findAll de CategoryService', ()=>{
 
     const expectCategories = allCategories.filter(categorie => categorie.titulo.includes(filter.titulo) || categorie.cor.includes(filter.cor) );
 
-    categoryRepositoryMock.expects('findAll')
+    categoryRepositoryMock.expects('findVideosByFilters')
     .withExactArgs(filter)
     .resolves(expectCategories);
     
@@ -69,7 +69,7 @@ describe('Testando método findAll de CategoryService', ()=>{
 
     const expectCategories = allCategories.filter(categorie => categorie.titulo.includes(filter.titulo) || categorie.cor.includes(filter.cor) );
 
-    categoryRepositoryMock.expects('findAll')
+    categoryRepositoryMock.expects('findVideosByFilters')
     .withExactArgs(filter)
     .resolves(expectCategories);
 
@@ -81,6 +81,49 @@ describe('Testando método findAll de CategoryService', ()=>{
 
     expect(catetegories).toEqual(expectCategories);
     expect(endTime - startTime ).toBeLessThan(1000);
+  });
+
+  it('Deve fazer paginação de 5 itens por vez, e deve executar em um tempo aceitável ', async()=>{
+    const filter = {page: 3};
+    const {page} = filter;
+
+    const itemsPerPage = 5;
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    const allCategory = [
+      {id: 1, titulo: 'teste',  cor: 'cor teste'},
+      {id: 2, titulo: 'teste 2', cor: 'cor teste 2' },
+      {id: 3, titulo: 'novo titulo',  cor: 'nova cor' },
+      {id: 4, titulo: 'novo titulo',  cor: 'nova cor' },
+      {id: 5, titulo: 'novo titulo',  cor: 'nova cor' },
+      {id: 6, titulo: 'novo titulo',  cor: 'nova cor' },
+      {id: 7, titulo: 'novo titulo',  cor: 'nova cor' },
+      {id: 8, titulo: 'novo titulo',  cor: 'nova cor' },
+      {id: 9, titulo: 'novo titulo',  cor: 'nova cor' },
+      {id: 10, titulo: 'novo titulo',  cor: 'nova cor' },
+      {id: 11, titulo: 'novo titulo',  cor: 'nova cor' },
+      {id: 12, titulo: 'novo titulo',  cor: 'nova cor' }
+    ];
+   
+    const expectedCategory = allCategory.slice(startIndex, endIndex);
+
+    categoryRepositoryMock.expects('pagination')
+    .withExactArgs(page)
+    .resolves(expectedCategory);
+
+    const startTime =  Date.now();
+
+    const categories = await categoryService.findAll(filter);
+  
+    categoryRepositoryMock.verify();
+    
+    const endTime =  Date.now();
+   
+
+    expect(endTime - startTime).toBeLessThan(1000);
+    expect(categories).toEqual(expectedCategory);
+    expect(categories.length).toEqual(expectedCategory.length);
   });
 });
 
@@ -134,7 +177,7 @@ describe('Testando método findAll de CategoryService',()=>{
     expect(video).toHaveProperty('id', 'titulo','cor');
   });
 
-  it('Deve executar dentro de um tempo aceitavél', async()=>{
+  it('Deve executar dentro de um tempo aceitável', async()=>{
     const expectedCategory= {
       id: 'b0be69fa-ebc1-48dc-9bc7-ef471bda71b8',
       titulo: 'titulo teste',
@@ -228,7 +271,7 @@ describe('Testando método create de CategoryService', ()=>{
    
   });
 
-  it('Deve executar em um tempo aceitavél', async()=>{
+  it('Deve executar em um tempo aceitável', async()=>{
     const expectCategories = {
       id: 'fb01919e-10b1-46d6-977f-1a0aa5ed218f',
       titulo: 'Meu titulo',
@@ -423,7 +466,7 @@ describe('Testando método delete de CategoryService',()=>{
 
   it('Deve deletar a categoria', async()=>{
     const expectedMessage = {
-      message: 'Categoria deletado com sucesso'
+      mensagem: 'Categoria deletado com sucesso'
     };
 
     const elementId = {
@@ -445,7 +488,7 @@ describe('Testando método delete de CategoryService',()=>{
 
     categoryRepositoryMock.expects('delete')
     .withExactArgs(elementId)
-    .resolves(expectedMessage.message);
+    .resolves(expectedMessage);
 
 
     const result = await categoryService.delete(elementId);
