@@ -16,9 +16,9 @@ export class CategoryController extends CrudControllerUtils{
     this.router.get('/', async (req, res, next )=>{
       try {
 
-        const filters = await this.validatorSchemaCategory.findAll(req.query);
+        const filter = await this.validatorSchemaCategory.findAll(req.query);
 
-        const categories = await this.categoryService.findAll(filters);
+        const categories = await this.categoryService.findAll(filter);
 
         return res.status(200).send(categories);
       } catch (error) {
