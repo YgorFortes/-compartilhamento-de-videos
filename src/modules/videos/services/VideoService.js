@@ -12,12 +12,23 @@ export class VideoService extends CrudServiceUtils{
     this.categoriaService = new CategoryService();
   }
 
-  async findAll(filter){
+  async findAll(filters){
+    const {page} = filters;
    try {
 
-    await this.validatorSchema.findAll(filter);
+    await this.validatorSchema.findAll(filters);
+
+    const hasFilter = this.checkFilterProperties(filters);
     
-    const videos = await this.videoRepository.findAll(filter);
+    if(hasFilter){
+      return this.videoRepository.findVideosByFilters(filters);
+    }
+
+    if(page){
+      return this.videoRepository.pagination(page);
+    }
+
+    const videos = await this.videoRepository.findAll();
 
     return videos;
 
@@ -99,7 +110,7 @@ export class VideoService extends CrudServiceUtils{
       const result = await this.videoRepository.delete(videoId);
 
       if(result){
-        return 'Video deletado com sucesso';
+        return{ mensagem: 'Video deletado com sucesso'};
       }
 
     } catch (error) {
@@ -132,6 +143,22 @@ export class VideoService extends CrudServiceUtils{
         throw new CustomError('Categoria não encontrado.', 404);
       }
     }
+  }
+
+  checkFilterProperties(filters) {
+
+    /* 
+      Verify if proprities descricao, titulo or url is put in query 
+    */
+
+    const hasFilter = Object.keys(filters).filter((filter)=> {
+      if(filter === 'descricao' || filter === 'titulo' || filter === 'url'){
+        return true;
+      }
+      return false;
+    }).length >0;
+
+    return hasFilter;
   }
 
 }

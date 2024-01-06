@@ -8,8 +8,13 @@ export class ValitatorSchemaVideo {
       query: Yup.object().shape({
         titulo: Yup.string().trim().lowercase(),
         descricao: Yup.string().trim().lowercase(),
-        url: Yup.string().trim().url('A url deve ser valida'),
-      })
+        url: Yup.string().trim().url('A url deve ser valida.'),
+        page: Yup.number()
+          .typeError('O campo page só recebe números.')
+          .integer('O campo page só recebe números inteiros.')
+          .positive('O campo page só recebe números positivos'
+        )
+      }).noUnknown()
      
     });
     
@@ -22,7 +27,7 @@ export class ValitatorSchemaVideo {
       params: Yup.object().shape({
         id: Yup.string().trim()
         .required('O parâmetros id no params é obigatório.')
-        .uuid('O parâmetros elementId no params deve ser UUID válido.')
+        .uuid('O parâmetros id no params deve ser UUID válido.')
       }),
     });
 
@@ -49,7 +54,7 @@ export class ValitatorSchemaVideo {
       params: Yup.object().shape({
         id: Yup.string().trim()
         .required('O parâmetros id no params é obigatório.')
-        .uuid('O parâmetros elementId no params deve ser UUID válido.')
+        .uuid('O parâmetros id no params deve ser UUID válido.')
       }),
       body: Yup.object().shape({
         titulo: Yup.string().trim().lowercase(),
@@ -68,7 +73,7 @@ export class ValitatorSchemaVideo {
       params: Yup.object().shape({
         id: Yup.string().trim()
         .required('O parâmetros id no params é obigatório.')
-        .uuid('O parâmetros elementId no params deve ser UUID válido.')
+        .uuid('O parâmetros id no params deve ser UUID válido.')
       }),
     });
 

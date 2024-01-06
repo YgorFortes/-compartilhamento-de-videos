@@ -7,7 +7,12 @@ export class ValidatorSchemaCategory{
       query: Yup.object().shape({
         titulo: Yup.string().trim().lowercase(),
         cor: Yup.string().trim().lowercase(),
-      })
+        page: Yup.number()
+          .typeError('O campo page só recebe números.')
+          .integer('O campo page só recebe números inteiros.')
+          .positive('O campo page só recebe números positivos.'
+        ),
+      }).noUnknown()
      
     });
     
@@ -20,7 +25,7 @@ export class ValidatorSchemaCategory{
       params: Yup.object().shape({
         id: Yup.string().trim()
         .required('O parâmetros id no params é obigatório.')
-        .uuid('O parâmetros elementId no params deve ser UUID válido.')
+        .uuid('O parâmetros id no params deve ser UUID válido.')
       }),
     });
 
@@ -64,7 +69,7 @@ export class ValidatorSchemaCategory{
       params: Yup.object().shape({
         id: Yup.string().trim()
         .required('O parâmetros id no params é obigatório.')
-        .uuid('O parâmetros elementId no params deve ser UUID válido.')
+        .uuid('O parâmetros id no params deve ser UUID válido.')
       }),
     });
 
@@ -78,7 +83,7 @@ export class ValidatorSchemaCategory{
       params: Yup.object().shape({
         id: Yup.string().trim()
         .required('O parâmetros id no params é obigatório.')
-        .uuid('O parâmetros elementId no params deve ser UUID válido.')
+        .uuid('O parâmetros id no params deve ser UUID válido.')
       }),
     });
 

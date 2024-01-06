@@ -36,6 +36,15 @@ describe('Testando o método findAll de ValitatorSchemaVideo', ()=>{
 
     await expect(valitatorSchemaVideo.findAll(atribbutes)).rejects.toThrow('A url deve ser valida');
   });
+
+  it('Deve verificar se são numeros inteiros se o campo page no query for colocado', async()=>{
+    const atribbutes = {
+      page: ' numero 5',
+    }; 
+
+
+    await expect(valitatorSchemaVideo.findAll(atribbutes)).rejects.toThrow('O campo page só recebe números.');
+  });
 });
 
 describe('Testando o metodo findOne de ValitatorSchemaVideo ', ()=>{
@@ -57,15 +66,15 @@ describe('Testando o metodo findOne de ValitatorSchemaVideo ', ()=>{
     expect(resultado).toEqual(expectElementId);
   });
 
-  it('O campo elementId do params deve ser um UUID', async()=>{
+  it('O campo id do params deve ser um UUID', async()=>{
     const elementId = {
       id: 'não é um UUID'
     };
 
-    await expect(valitatorSchemaVideo.findOne(elementId)).rejects.toThrow('O parâmetros elementId no params deve ser UUID válido.');
+    await expect(valitatorSchemaVideo.findOne(elementId)).rejects.toThrow('O parâmetros id no params deve ser UUID válido.');
   });
 
-  it('O campo elementId do params deve ser obrigatório', async()=>{
+  it('O campo id do params deve ser obrigatório', async()=>{
     const elementId = {
       id: null
     };
@@ -149,7 +158,7 @@ describe('Testando o método update de ValitatorSchemaVideo ',  ()=>{
     valitatorSchemaVideo = new ValitatorSchemaVideo();
   });
 
-  it('Deve retirar os espaços em branco do body ', async()=>{
+  it('Deve retirar os espaços em branco do body e tirar todas as letras maiusculas', async()=>{
     const videoData = {
         body: {
           titulo: 'Ronaldo test ',
@@ -163,7 +172,7 @@ describe('Testando o método update de ValitatorSchemaVideo ',  ()=>{
 
     const elementExpect =  {
       body: {
-        titulo: 'Ronaldo test',
+        titulo: 'ronaldo test',
         url: 'https://trello.com/c/e9pwuV1N/12-requisi%C3%A7%C3%A3o-para-atualizar-um-v%C3%ADdeo-pelo-id',
         descricao: 'descricao'
       },
@@ -186,7 +195,7 @@ describe('Testando o método update de ValitatorSchemaVideo ',  ()=>{
 
     const videoData2 = {
       body: {
-        titulo: 'Ronaldo test ',
+        titulo: 'ronaldo test ',
         url: 'https://trello.com/c/e9pwuV1N/12-requisi%C3%A7%C3%A3o-para-atualizar-um-v%C3%ADdeo-pelo-id ',
         descricao: 'descricao'
       },
@@ -195,7 +204,7 @@ describe('Testando o método update de ValitatorSchemaVideo ',  ()=>{
     
     
     await expect(valitatorSchemaVideo.update(videoData)).rejects.toThrow('O campo url deve ter um formato válido.');
-    await expect(valitatorSchemaVideo.update(videoData2)).rejects.toThrow('O parâmetros elementId no params deve ser UUID válido.');
+    await expect(valitatorSchemaVideo.update(videoData2)).rejects.toThrow('O parâmetros id no params deve ser UUID válido.');
   });
 
   it('Deve validar se todos os campos são válidos', async()=>{
@@ -208,11 +217,19 @@ describe('Testando o método update de ValitatorSchemaVideo ',  ()=>{
       params: { id: '2b37f2b1-448b-4924-88af-4fae372beb50' }
     };
 
-    const result = await valitatorSchemaVideo.update(videoData); 
-    expect(result).toEqual(videoData);
-  });
+    const elementExpect =  {
+      body: {
+        titulo: 'ronaldo test',
+        url: 'https://trello.com/c/e9pwuV1N/12-requisi%C3%A7%C3%A3o-para-atualizar-um-v%C3%ADdeo-pelo-id',
+        descricao: 'descricao'
+      },
+      params: { id: '2b37f2b1-448b-4924-88af-4fae372beb50' }
+    };
 
-  
+    const result = await valitatorSchemaVideo.update(videoData); 
+    expect(result).toEqual(elementExpect);
+  });
+ 
 
 });
 
@@ -235,15 +252,15 @@ describe('Testando o método delete de ValitatorSchemaVideo', ()=>{
     expect(resultado).toEqual(expectElementId);
   });
 
-  it('O campo elementId do params deve ser um UUID', async()=>{
+  it('O campo id do params deve ser um UUID', async()=>{
     const elementId = {
       id: 'não é um UUID'
     };
 
-    await expect(valitatorSchemaVideo.delete(elementId)).rejects.toThrow('O parâmetros elementId no params deve ser UUID válido.');
+    await expect(valitatorSchemaVideo.delete(elementId)).rejects.toThrow('O parâmetros id no params deve ser UUID válido.');
   });
 
-  it('O campo elementId do params deve ser obrigatório', async()=>{
+  it('O campo id do params deve ser obrigatório', async()=>{
     const elementId = {
       id: null
     };

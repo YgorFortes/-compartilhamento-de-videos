@@ -24,6 +24,14 @@ describe('Testando o método findAll de ValidatorSchemaCategory', ()=>{
     const resultado = await validatorSchemaCategory.findAll(atribbutes);
     expect(resultado).toEqual(expectAtribbutes);
   });
+  it('Deve verificar se são numeros inteiros se o campo page no query for colocado', async()=>{
+    const atribbutes = {
+      page: ' numero 5',
+    }; 
+
+
+    await expect(validatorSchemaCategory.findAll(atribbutes)).rejects.toThrow('O campo page só recebe números.');
+  });
 });
 
 describe('Testando o metodo findOne de ValidatorSchemaCategory ', ()=>{
@@ -45,15 +53,15 @@ describe('Testando o metodo findOne de ValidatorSchemaCategory ', ()=>{
     expect(resultado).toEqual(expectElementId);
   });
 
-  it('O campo elementId do params deve ser um UUID', async()=>{
+  it('O campo id do params deve ser um UUID', async()=>{
     const elementId = {
       id: 'não é um UUID'
     };
 
-    await expect(validatorSchemaCategory.findOne(elementId)).rejects.toThrow('O parâmetros elementId no params deve ser UUID válido.');
+    await expect(validatorSchemaCategory.findOne(elementId)).rejects.toThrow('O parâmetros id no params deve ser UUID válido.');
   });
 
-  it('O campo elementId do params deve ser obrigatório', async()=>{
+  it('O campo id do params deve ser obrigatório', async()=>{
     const elementId = {
       id: null
     };
@@ -125,15 +133,15 @@ describe('Testa método delete de ValidatorSchemaSchemaCategory', ()=>{
     expect(resultado).toEqual(expectElementId);
   });
 
-  it('O campo elementId do params deve ser um UUID', async()=>{
+  it('O campo id do params deve ser um UUID', async()=>{
     const elementId = {
       id: 'não é um UUID'
     };
 
-    await expect(validatorSchemaCategory.findOne(elementId)).rejects.toThrow('O parâmetros elementId no params deve ser UUID válido.');
+    await expect(validatorSchemaCategory.findOne(elementId)).rejects.toThrow('O parâmetros id no params deve ser UUID válido.');
   });
 
-  it('O campo elementId do params deve ser obrigatório', async()=>{
+  it('O campo id do params deve ser obrigatório', async()=>{
     const elementId = {
       id: null
     };

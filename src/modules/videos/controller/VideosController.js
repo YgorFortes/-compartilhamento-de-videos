@@ -12,10 +12,9 @@ export class  VideosController extends CrudControllerUtils {
   findAll(){
     this.router.get('/', async (req, res, next) => {
       try {
+        const filters = await this.validatorSchema.findAll(req.query);
         
-        const filter = await this.validatorSchema.findAll(req.query);
-        
-        const videos = await this.videoService.findAll(filter);
+        const videos = await this.videoService.findAll(filters);
 
         return res.status(200).send(videos);
       } catch (error) {
@@ -75,7 +74,7 @@ export class  VideosController extends CrudControllerUtils {
         
         const resultMessageDelete = await this.videoService.delete(videoId);
         
-        return res.status(200).send({message: resultMessageDelete});
+        return res.status(200).send(resultMessageDelete);
       } catch (error) {
         next(error);
       }
