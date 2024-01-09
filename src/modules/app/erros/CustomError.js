@@ -4,4 +4,12 @@ export class CustomError extends Error {
     this.message = message;
     this.statusCode = statusCode;
   }
+
+  static checkAndThrowError(error){
+    if (error instanceof CustomError) {
+      throw error;
+    } 
+    console.error(error);
+    throw new Error();
+  }
 }
