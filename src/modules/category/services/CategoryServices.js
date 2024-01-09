@@ -30,7 +30,7 @@ export  class CategoryService extends CrudServiceUtils{
 
       return category;
     } catch (error) {
-      throw error;
+      CustomError.checkAndThrowError(error);
     }
   }
 
@@ -47,7 +47,7 @@ export  class CategoryService extends CrudServiceUtils{
 
       return category;
     } catch (error) {
-      throw error;
+      CustomError.checkAndThrowError(error);
     }
   }
 
@@ -59,7 +59,7 @@ export  class CategoryService extends CrudServiceUtils{
   
       return {categoria: videoByCategory};
     } catch (error) {
-      throw error;
+      CustomError.checkAndThrowError(error);
     }
   }
 
@@ -78,7 +78,7 @@ export  class CategoryService extends CrudServiceUtils{
       return category;
 
     } catch (error) {
-      throw error;
+      CustomError.checkAndThrowError(error);
     }
   }
 
@@ -97,7 +97,7 @@ export  class CategoryService extends CrudServiceUtils{
       
       return newInfoCategory;
     } catch (error) {
-      throw error;
+      CustomError.checkAndThrowError(error);
     }
   }
 
@@ -118,7 +118,7 @@ export  class CategoryService extends CrudServiceUtils{
       }
 
     } catch (error) {
-      throw error;
+      CustomError.checkAndThrowError(error);
     }
   }
 
@@ -133,7 +133,7 @@ export  class CategoryService extends CrudServiceUtils{
 
       return category;
     } catch (error) {
-      throw error;
+      CustomError.checkAndThrowError(error);
     }
   }
 
@@ -143,13 +143,17 @@ export  class CategoryService extends CrudServiceUtils{
       Verify if proprities descricao, titulo or url is put in query 
     */
 
-    const hasFilter = Object.keys(filters).filter((filter)=> {
-      if(filter === 'titulo' || filter === 'cor'){
-        return true;
-      }
-      return false;
-    }).length >0;
-
-    return hasFilter;
+    try {
+      const hasFilter = Object.keys(filters).filter((filter)=> {
+        if(filter === 'titulo' || filter === 'cor'){
+          return true;
+        }
+        return false;
+      }).length >0;
+  
+      return hasFilter;
+    } catch (error) {
+      CustomError.checkAndThrowError(error);
+    } 
   }
 }
