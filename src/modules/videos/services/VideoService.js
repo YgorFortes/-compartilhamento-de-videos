@@ -33,7 +33,7 @@ export class VideoService extends CrudServiceUtils{
     return videos;
 
    } catch (error) {
-    throw error;
+    CustomError.checkAndThrowError(error);
    }
   }
 
@@ -50,7 +50,7 @@ export class VideoService extends CrudServiceUtils{
      return video;
 
     } catch (error) {
-      throw error;
+      CustomError.checkAndThrowError(error);
     }
   }
 
@@ -70,7 +70,7 @@ export class VideoService extends CrudServiceUtils{
       return newVideo;
 
     } catch (error) {
-      throw error;
+      CustomError.checkAndThrowError(error);
     }
   }
 
@@ -93,7 +93,7 @@ export class VideoService extends CrudServiceUtils{
       return newInfoVideo;
 
     } catch (error) {
-      throw error;
+      CustomError.checkAndThrowError(error);
     }
   }
 
@@ -114,7 +114,7 @@ export class VideoService extends CrudServiceUtils{
       }
 
     } catch (error) {
-      throw error;
+      CustomError.checkAndThrowError(error);
     }
   }
 
@@ -130,19 +130,25 @@ export class VideoService extends CrudServiceUtils{
       
       return videoData;
     } catch (error) {
-      throw error;
+      CustomError.checkAndThrowError(error);
     }
   }
 
   async verifyCategoryById(categoriaId){
-    if(categoriaId){
-    
-      const category = await this.categoriaService.findOne({id: categoriaId});
 
-      if(category.length <1){
-        throw new CustomError('Categoria não encontrado.', 404);
+    try {
+      if(categoriaId){
+    
+        const category = await this.categoriaService.findOne({id: categoriaId});
+  
+        if(category.length <1){
+          throw new CustomError('Categoria não encontrado.', 404);
+        }
       }
+    } catch (error) {
+      CustomError.checkAndThrowError(error);
     }
+    
   }
 
   checkFilterProperties(filters) {
@@ -151,14 +157,19 @@ export class VideoService extends CrudServiceUtils{
       Verify if proprities descricao, titulo or url is put in query 
     */
 
-    const hasFilter = Object.keys(filters).filter((filter)=> {
-      if(filter === 'descricao' || filter === 'titulo' || filter === 'url'){
-        return true;
-      }
-      return false;
-    }).length >0;
-
-    return hasFilter;
+    try {
+      const hasFilter = Object.keys(filters).filter((filter)=> {
+        if(filter === 'descricao' || filter === 'titulo' || filter === 'url'){
+          return true;
+        }
+        return false;
+      }).length >0;
+  
+      return hasFilter;
+    } catch (error) {
+      CustomError.checkAndThrowError(error);
+    }
+    
   }
 
 }

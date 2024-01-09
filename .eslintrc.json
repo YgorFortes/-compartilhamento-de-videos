@@ -19,7 +19,6 @@
       "import/extensions": "off",
       "consistent-return": "off",
       "no-console": "off",
-      "semi": ["error", "always"],
-      "no-useless-catch": "off"
+      "semi": ["error", "always"]
     }
 }
