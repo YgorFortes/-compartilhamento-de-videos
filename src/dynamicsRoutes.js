@@ -3,9 +3,9 @@ import { AppController } from './modules/app/appController.js';
 import { VideosController } from "./modules/videos/controller/VideosController.js";
 import { ErrorMiddlewares } from "./modules/app/middlewares/ErrorMiddlewares.js";
 import { CategoryController } from "./modules/category/controller/CategoryController.js";
+import { UserController } from "./modules/users/controller/UserController.js";
 
-// importe os controlers aqui
-
+// import all controlers here
 class dynamicsRoutes {
   constructor(){
     this.router = Router();
@@ -13,13 +13,18 @@ class dynamicsRoutes {
   }
 
   setupRouter(){
-   /* instancia os controllers 
-    use o this.use aqui */
+   /* instence controllers 
+    use o this.use here */
+
     this.router.use(this.json);
     
 
     const appController = new AppController();
     this.router.use('/', appController.routes());
+
+    /*  User routes */
+    const userController = new UserController();
+    this.router.use('/', userController.routes());
 
 
 
@@ -27,8 +32,11 @@ class dynamicsRoutes {
     const videosController = new VideosController();
     this.router.use('/videos', videosController.routes());
 
+    /* Category routes */
     const categoryController = new CategoryController();
     this.router.use('/categorias', categoryController.routes());
+
+
 
     const errorMiddlewares = new ErrorMiddlewares();
     this.router.use(errorMiddlewares.handleError());
