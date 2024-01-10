@@ -1,6 +1,7 @@
 import {CrudControllerUtils} from "../../../utils/crud/crudControllerUtils.js";
 import {CategoryService} from "../services/CategoryServices.js";
 import { ValidatorSchemaCategory } from "../validators/ValidatorSchemaCategory.js";
+import { TokenVerificationMiddleware } from "../../app/middlewares/TokenVerificationMiddleware.js";
 
 
 export class CategoryController extends CrudControllerUtils{
@@ -13,7 +14,7 @@ export class CategoryController extends CrudControllerUtils{
 
 
   findAll(){
-    this.router.get('/', async (req, res, next )=>{
+    this.router.get('/', TokenVerificationMiddleware.checkAuthToken, async (req, res, next )=>{
       try {
 
         const filter = await this.validatorSchemaCategory.findAll(req.query);
@@ -28,7 +29,7 @@ export class CategoryController extends CrudControllerUtils{
   };
 
   findOne(){
-    this.router.get('/:id', async (req, res, next)=>{
+    this.router.get('/:id', TokenVerificationMiddleware.checkAuthToken, async (req, res, next)=>{
       try {
         const categoryId = await this.validatorSchemaCategory.findOne(req.params);
         
@@ -42,7 +43,7 @@ export class CategoryController extends CrudControllerUtils{
   }
   
   findVideosByCategory(){
-    this.router.get('/:id/videos', async(req, res, next)=>{
+    this.router.get('/:id/videos',TokenVerificationMiddleware.checkAuthToken, async(req, res, next)=>{
      try {
       const categoryId = await this.validatorSchemaCategory.findVideosByCategory(req.params);
       
@@ -57,7 +58,7 @@ export class CategoryController extends CrudControllerUtils{
   }
 
   create(){
-    this.router.post('/', async(req, res, next)=>{
+    this.router.post('/',TokenVerificationMiddleware.checkAuthToken, async(req, res, next)=>{
       try {
         const categoryBody = await this.validatorSchemaCategory.create(req.body);
 
@@ -71,7 +72,7 @@ export class CategoryController extends CrudControllerUtils{
   }
 
   update(){
-    this.router.patch('/:id', async(req, res, next)=>{
+    this.router.patch('/:id', TokenVerificationMiddleware.checkAuthToken, async(req, res, next)=>{
       try {
         const categoryData = await this.validatorSchemaCategory.update({params: req.params, body: req.body});
 
@@ -85,7 +86,7 @@ export class CategoryController extends CrudControllerUtils{
   }
 
   delete(){
-    this.router.delete('/:id',async(req, res, next)=>{
+    this.router.delete('/:id', TokenVerificationMiddleware.checkAuthToken, async(req, res, next)=>{
       try {
         const categoryId = await this.validatorSchemaCategory.delete(req.params);
 

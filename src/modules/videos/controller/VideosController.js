@@ -1,16 +1,18 @@
 import { VideoService } from "../services/VideoService.js";
 import {CrudControllerUtils} from "../../../utils/crud/crudControllerUtils.js";
 import { ValitatorSchemaVideo } from "../validators/ValidatorSchemaVideo.js";
- 
+import { TokenVerificationMiddleware } from "../../app/middlewares/TokenVerificationMiddleware.js";
+
 export class  VideosController extends CrudControllerUtils {
   constructor(){
     super();
     this.videoService = new VideoService();
     this.validatorSchema = new ValitatorSchemaVideo();
+    this.setupRouter();
   }
 
   findAll(){
-    this.router.get('/', async (req, res, next) => {
+    this.router.get('/',TokenVerificationMiddleware.checkAuthToken, async (req, res, next) => {
       try {
         const filters = await this.validatorSchema.findAll(req.query);
         
@@ -24,7 +26,7 @@ export class  VideosController extends CrudControllerUtils {
   }
 
   findOne(){
-    this.router.get('/:id', async (req, res, next)=>{
+    this.router.get('/:id', TokenVerificationMiddleware.checkAuthToken, async (req, res, next)=>{
 
      try {
       const videoId = await this.validatorSchema.findOne(req.params);
@@ -39,10 +41,10 @@ export class  VideosController extends CrudControllerUtils {
   }
 
   create(){
-    this.router.post('/', async (req, res, next)=>{
+    this.router.post('/', TokenVerificationMiddleware.checkAuthToken, async  (req, res, next)=>{
       try {
         const videoData = await this.validatorSchema.create(req.body);
-
+        console.log();
         const newVideo = await this.videoService.create(videoData);
 
         return res.status(201).send(newVideo);
@@ -53,7 +55,7 @@ export class  VideosController extends CrudControllerUtils {
   }
 
   update(){
-    this.router.patch('/:id', async (req, res, next)=>{
+    this.router.patch('/:id',TokenVerificationMiddleware.checkAuthToken, async (req, res, next)=>{
       try {
         const videoData = await this.validatorSchema.update({body: req.body, params: req.params});
 
@@ -68,7 +70,7 @@ export class  VideosController extends CrudControllerUtils {
   }
 
   delete(){
-    this.router.delete('/:id', async(req, res, next)=>{
+    this.router.delete('/:id',TokenVerificationMiddleware.checkAuthToken, async(req, res, next)=>{
       try {
         const videoId = await this.validatorSchema.delete(req.params);
         
