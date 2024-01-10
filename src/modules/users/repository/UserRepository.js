@@ -12,10 +12,23 @@ export class UserRepository extends CrudRepositoryUtils {
     });
   }
 
-  create (){
-
+  create (newInfoUser){
+    return this.prismaClient.usuarios.create({
+      data: {
+        ...newInfoUser
+      },
+      select: {
+        id: true,
+        login: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true
+      } 
+    });
+  
   }
 
+  
   update (){
 
   }

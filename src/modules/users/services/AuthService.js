@@ -1,24 +1,27 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import bcrypt from 'bcrypt';
-import jsonwebtoken from 'jsonwebtoken';
 import { CrudServiceUtils } from "../../../utils/crud/crudServiceUtils.js";
 import { ValidatorSchemaAuth } from "../validators/ValidatorSchemaAuth.js";
 import { UserRepository } from "../repository/UserRepository.js";
 import { CustomError } from "../../app/erros/CustomError.js";
+import { UserService } from './UserService.js';
+import { UtilsUser } from '../utils/UtilsUser.js';
 
 export class AuthService extends CrudServiceUtils {
   constructor(){
     super();
     this.userRepository = new UserRepository();
+    this.userService = new UserService();
     this.validatorSchemaAuth = new ValidatorSchemaAuth();
+    this.utilsUser = new UtilsUser();
   }
 
-  async login (UserData){
-    const {login,email , senha} = UserData;
+  async login (userData){
+    const {login,email , senha} = userData;
     try {
-      await this.validatorSchemaAuth.login(UserData);
+      await this.validatorSchemaAuth.login(userData);
       
-      const user = await this.findByEmailOrLogin(login, email);
+      const user = await this.userService.findByEmailOrLogin(login, email);
 
       if(!user){
         throw new CustomError('Usuário não encontrado.', 404);
@@ -32,6 +35,7 @@ export class AuthService extends CrudServiceUtils {
     }
   }
 
+
   async validateLogin(user, senha){
     const checkPassword = await bcrypt.compare(senha, user.senha);
 
@@ -39,26 +43,9 @@ export class AuthService extends CrudServiceUtils {
       throw new CustomError('Senha incorreta. Tente novamente.', 401);
     }
 
-    const token = await this.createToken(user);
+    const token = await this.utilsUser.createToken(user.id);
     return {mensagem: 'Usuario logado com sucesso.', token};
   }
 
-  async createToken(user){
-    const payload = {id: user.id};
-
-    const secretKey = process.env.SECRET;
-
-    const token = jsonwebtoken.sign(payload, secretKey, { expiresIn: '8h' });
-
-    return token;
-  }
-
-  
-  async findByEmailOrLogin(login, email){
-    return await login ? this.userRepository.findByLogin(login)
-    : this.userRepository.findByEmail(email);
-  }
-
-  
   
 }

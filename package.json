@@ -8,9 +8,13 @@
     "start": "nodemon ./src/server.js",
     "test:video:service": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/videos/services/videoServices.test.js",
     "test:category:service": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/category/services/categoryServices.test.js",
+    "test:auth:service": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/user/services/authService.test.js",
     "test:user:service": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/user/services/userService.test.js",
+    "test:user:utils": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/user/utils/utilsUser.test.js",
     "test:video:validators": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/videos/validators/validatorSchemaVideo.test.js",
     "test:category:validators": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/category/validators/validatorSchemaCategory.test.js",
+    "test:auth:validators": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/user/validators/validatorSchemaAuth.test.js",
+    "test:user:validators": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/user/validators/ValidatorSchemaUser.test.js",
     "test:video:routes": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/routes/videos.test",
     "test:category:routes": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=/test/routes/categorias.test"
   },
