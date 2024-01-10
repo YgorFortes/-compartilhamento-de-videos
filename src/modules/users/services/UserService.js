@@ -1,5 +1,4 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import bcrypt from 'bcrypt';
 import { CrudServiceUtils } from "../../../utils/crud/crudServiceUtils.js";
 import { ValidatorSchemaUser } from '../validators/ValidatorSchemaUser.js'; 
 import { UserRepository } from "../repository/UserRepository.js";
@@ -20,7 +19,7 @@ export class UserService extends CrudServiceUtils {
     try {
       await this.validatorSchemaUser.create(userData);
       
-      const emailOrLoginExist = await this.findByEmailOrLogin(login, email);
+      const emailOrLoginExist = await  this.utilsUser.findByEmailOrLogin(login, email);
 
       if(emailOrLoginExist){
         throw new CustomError('Email ou login já cadastrado.',409);
@@ -36,14 +35,6 @@ export class UserService extends CrudServiceUtils {
     } catch (error) {
       CustomError.checkAndThrowError(error);
     }
-  }
-
-  async createHashPassword(senha){
-    const salt = await bcrypt.genSalt(12);
-
-    const passwordHash = await bcrypt.hash(senha, salt);
-
-    return passwordHash;
   }
 
   
