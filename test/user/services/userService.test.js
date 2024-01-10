@@ -1,168 +1,156 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import {describe , expect, it, afterEach, beforeEach} from '@jest/globals';
 import Sinon from 'sinon';
-import { AuthService } from '../../../src/modules/users/services/AuthService';
+import bcrypt from 'bcrypt';
+import { UserService } from '../../../src/modules/users/services/UserService.js';
 
-describe('Testando método login de user', ()=>{
-  let authService;
+
+describe('Testando método create do UserService',  ()=>{
   let userRepositoryMock;
-
-  
+  let utilsUserMock;
+  let userService;
+  let userServiceMock;
   beforeEach(()=>{
-    authService = new AuthService();
-    userRepositoryMock = Sinon.mock(authService.userRepository);
+    userService = new UserService();
+    userRepositoryMock = Sinon.mock(userService.userRepository);
+    userServiceMock =Sinon.mock(userService);
+    utilsUserMock = Sinon.mock(userService.utilsUser);
   });
 
-  afterEach(()=>{
+  afterEach(() => {
     userRepositoryMock.restore();
+    utilsUserMock.restore();
   });
 
-  it('Deve criar um token com se login e senha for digitados',async ()=>{
-    
-
+  it('Deve retornar um usuáro junto com um token e senhaHash', async ()=>{
     const elementBody = {
-      login: 'loginfeito',
-      email: 'email@email.com',
-      senha: 'minhasenha'
+      login: 'meunovoLogin',
+      email: 'meuemail@gmail.com',
+      senha: 'minhanovasenhashow'
     };
 
     const userExpeted = {
-      id: '58e014df-82c1-47f7-8649-4683fff9780c',
-      login: 'loginfeito',
-      email: 'mail@email.com',
-      senha: '$2a$12$DUAO8fYr9WCZFVpwqCGzxODJbRPuDifsazBK8mEXxO6oQmNxpWXa2'
+      id: '4e65643e-bc03-4ca7-b87b-53f10d9dc088',
+      login: elementBody.login,
+      email: elementBody.email,
     };
 
+    const expectToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMzQ1Njc4OTAiLCJpYXQiOjE1MTYyMzkwMjJ9.Y4rwScILgHeZNmE4cWtTX524mg55VZEn10awsxDHpNo';
 
+    userServiceMock.expects('findByEmailOrLogin').withExactArgs(elementBody.login, elementBody.email).resolves(null);
 
-    userRepositoryMock.expects('findByLogin').withExactArgs(elementBody.login).resolves(userExpeted);
+    userRepositoryMock.expects('create').withExactArgs({login: elementBody.login, email: elementBody.email, senha: Sinon.match.string}).resolves(userExpeted);
 
-    const user = await authService.login(elementBody);
+    utilsUserMock.expects('createToken').withExactArgs(userExpeted.id).resolves(expectToken);
 
-    const expectToken = await authService.createToken(userExpeted);
-  
-    const expectLogin = {
-      mensagem: "Usuario logado com sucesso.",
-      token: expectToken
-    };
+    const {usuario, token} = await userService.create(elementBody);
 
-  
-
-    userRepositoryMock.verify();
- 
+    userServiceMock.verify();
+    utilsUserMock.verify();
     userRepositoryMock.verify();
 
-    expect(user).toEqual(expectLogin);
+    expect(usuario).toEqual(userExpeted);
+    expect(token).toEqual(expectToken);
 
   });
 
-  it('Deve criar um token com se email e senha for digitados', async()=>{
+  it('Deve funcionar corretamente quando o método create quando é chamado mais de uma vez', async ()=>{
     const elementBody = {
-      email: 'email@email.com',
-      senha: 'minhasenha'
+      login: 'meunovoLogin',
+      email: 'meuemail@gmail.com',
+      senha: 'minhanovasenhashow'
     };
 
     const userExpeted = {
-      id: '58e014df-82c1-47f7-8649-4683fff9780c',
-      email: 'mail@email.com',
-      senha: '$2a$12$DUAO8fYr9WCZFVpwqCGzxODJbRPuDifsazBK8mEXxO6oQmNxpWXa2'
+      id: '4e65643e-bc03-4ca7-b87b-53f10d9dc088',
+      login: elementBody.login,
+      email: elementBody.email,
     };
 
+    const expectToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMzQ1Njc4OTAiLCJpYXQiOjE1MTYyMzkwMjJ9.Y4rwScILgHeZNmE4cWtTX524mg55VZEn10awsxDHpNo';
 
+    userServiceMock.expects('findByEmailOrLogin').withExactArgs(elementBody.login, elementBody.email).resolves(null).twice();
 
-    userRepositoryMock.expects('findByEmail').withExactArgs(elementBody.email).resolves(userExpeted);
+    userRepositoryMock.expects('create').withExactArgs({login: elementBody.login, email: elementBody.email, senha: Sinon.match.string}).resolves(userExpeted).twice();
 
-    const user = await authService.login(elementBody);
+    utilsUserMock.expects('createToken').withExactArgs(userExpeted.id).resolves(expectToken).twice();
 
-    const expectToken = await authService.createToken(userExpeted);
-  
-    const expectLogin = {
-      mensagem: "Usuario logado com sucesso.",
-      token: expectToken
-    };
+    const {usuario, token} = await userService.create(elementBody);
 
-  
+    const newUser2 = await userService.create(elementBody);
 
-    userRepositoryMock.verify();
- 
+    userServiceMock.verify();
+    utilsUserMock.verify();
     userRepositoryMock.verify();
 
-    expect(user).toEqual(expectLogin);
+    expect(usuario).toEqual(userExpeted);
+    expect(token).toEqual(expectToken);
+    expect(newUser2.usuario).toEqual(userExpeted);
+    expect(newUser2.token).toEqual(expectToken);
+
   });
 
-  it('Deve verificar as hash com a senha digitada', async()=>{
+  it('Deve executar em um tempo aceitável', async ()=>{
     const elementBody = {
-      login: 'loginfeito',
-      email: 'email@email.com',
-      senha: 'minhasenha'
+      login: 'meunovoLogin',
+      email: 'meuemail@gmail.com',
+      senha: 'minhanovasenhashow'
     };
 
     const userExpeted = {
-      id: '58e014df-82c1-47f7-8649-4683fff9780c',
-      email: 'mail@email.com',
-      senha: '$2a$12$Pvy5l2Q.pMGtxLHhhq6wCOYy5N8XXRsZ6YzTSYxaCB61KOwOgRqlu'
+      id: '4e65643e-bc03-4ca7-b87b-53f10d9dc088',
+      login: elementBody.login,
+      email: elementBody.email,
     };
 
-    userRepositoryMock.expects('findByLogin').withExactArgs(elementBody.login).resolves(userExpeted);
+    const expectToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMzQ1Njc4OTAiLCJpYXQiOjE1MTYyMzkwMjJ9.Y4rwScILgHeZNmE4cWtTX524mg55VZEn10awsxDHpNo';
 
-    userRepositoryMock.expects('findByEmail').never();
+    userServiceMock.expects('findByEmailOrLogin').withExactArgs(elementBody.login, elementBody.email).resolves(null);
 
-    const user = await authService.findByEmailOrLogin(elementBody.login);
-    
-    const passwordValid = await authService.validateLogin(user, elementBody.senha);
-  
+    userRepositoryMock.expects('create').withExactArgs({login: elementBody.login, email: elementBody.email, senha: Sinon.match.string}).resolves(userExpeted);
 
-    expect(passwordValid.mensagem).toEqual("Usuario logado com sucesso.");
-  });
+    utilsUserMock.expects('createToken').withExactArgs(userExpeted.id).resolves(expectToken);
 
-  it('Deve comparar a senha digitada e dar um erro', async()=>{
-    const elementBody = {
-      login: 'loginfeito',
-      email: 'email@email.com',
-      senha: 'umanovasenha'
-    };
+    const startTime = new Date();
 
-    const userExpeted = {
-      id: '58e014df-82c1-47f7-8649-4683fff9780c',
-      email: 'mail@email.com',
-      senha: '$2a$12$Pvy5l2Q.pMGtxLHhhq6wCOYy5N8XXRsZ6YzTSYxaCB61KOwOgRqlu'
-    };
+    const {usuario, token} = await userService.create(elementBody);
 
-    userRepositoryMock.expects('findByLogin').withExactArgs(elementBody.login).resolves(userExpeted);
+    const endTime = new Date();
 
-
-    const user = await authService.findByEmailOrLogin(elementBody.login);
-    
-
-    await expect(authService.validateLogin(user, elementBody.senha)).rejects.toThrow("Senha incorreta. Tente novamente.");
- 
-  });
-
-  it('Deve  lançar um erro caso usuario não seja encontrado por login', async()=>{
-    const elementBody = {
-      login: 'loginfeito',
-      email: 'email@email.com',
-      senha: 'minhasenha'
-    };
-
-    userRepositoryMock.expects('findByLogin').withExactArgs(elementBody.login).resolves(null);
-
-    await expect(authService.login(elementBody)).rejects.toThrow('Usuário não encontrado.');
-
+    userServiceMock.verify();
+    utilsUserMock.verify();
     userRepositoryMock.verify();
+
+    expect(usuario).toEqual(userExpeted);
+    expect(token).toEqual(expectToken);
+    expect(endTime - startTime ).toBeLessThan(1000);
   });
 
-  it('Deve  lançar um erro caso usuario não seja encontrado por email', async()=>{
+  it('Deve lançar um erro quando login ou email já existe', async()=>{
+
     const elementBody = {
-      email: 'email@email.com',
-      senha: 'minhasenha'
+      login: 'meunovoLogin',
+      email: 'meuemail@gmail.com',
+      senha: 'minhanovasenhashow'
     };
 
-    userRepositoryMock.expects('findByEmail').withExactArgs(elementBody.email).resolves(null);
+    const userData = { login: 'meunovoLogin', email: 'meuemail@gmail.com', senha: 'minhanovasenhashow' };
 
-    await expect(authService.login(elementBody)).rejects.toThrow('Usuário não encontrado.');
+    userServiceMock.expects('findByEmailOrLogin').withExactArgs(elementBody.login, elementBody.email).resolves(userData);
 
-    userRepositoryMock.verify();
+    await expect(userService.create(userData)).rejects.toThrow('Email ou login já cadastrado.');
   });
 
+  it('Deve criar um hash de senha válido no método createHashPassword  e ser valido', async ()=>{
+    const  senha =  'minhanovasenhashow';
+
+    const passwordHash = await userService.createHashPassword(senha);
+
+    const isValidHash = await bcrypt.compare(senha, passwordHash);
+
+    expect(typeof passwordHash).toBe('string');
+    expect(isValidHash).toBe(true);
+    expect(passwordHash).not.toBe(senha);
+  });
 });
+
