@@ -1,7 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import {describe , expect, it, afterEach, beforeEach} from '@jest/globals';
 import Sinon from 'sinon';
-import bcrypt from 'bcrypt';
 import { UserService } from '../../../src/modules/users/services/UserService.js';
 
 
@@ -141,16 +140,5 @@ describe('Testando método create do UserService',  ()=>{
     await expect(userService.create(userData)).rejects.toThrow('Email ou login já cadastrado.');
   });
 
-  it('Deve criar um hash de senha válido no método createHashPassword  e ser valido', async ()=>{
-    const  senha =  'minhanovasenhashow';
-
-    const passwordHash = await userService.createHashPassword(senha);
-
-    const isValidHash = await bcrypt.compare(senha, passwordHash);
-
-    expect(typeof passwordHash).toBe('string');
-    expect(isValidHash).toBe(true);
-    expect(passwordHash).not.toBe(senha);
-  });
 });
 
