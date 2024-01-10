@@ -24,7 +24,7 @@ class dynamicsRoutes {
 
     /*  User routes */
     const userController = new UserController();
-    this.router.use('/', userController.routes());
+    this.router.use('/usuario', userController.routes());
 
 
 
@@ -35,7 +35,6 @@ class dynamicsRoutes {
     /* Category routes */
     const categoryController = new CategoryController();
     this.router.use('/categorias', categoryController.routes());
-
 
 
     const errorMiddlewares = new ErrorMiddlewares();
