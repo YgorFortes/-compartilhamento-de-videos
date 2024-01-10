@@ -19,13 +19,13 @@ export class UserService extends CrudServiceUtils {
     try {
       await this.validatorSchemaUser.create(userData);
       
-      const emailOrLoginExist = await  this.utilsUser.findByEmailOrLogin(login, email);
+      const emailOrLoginExist = await this.findByEmailOrLogin(login, email);
 
       if(emailOrLoginExist){
         throw new CustomError('Email ou login já cadastrado.',409);
       }
 
-      const passwordHash = await this.createHashPassword(senha);
+      const passwordHash = await this.utilsUser.createHashPassword(senha);
 
       const newUser = await this.userRepository.create({login, email, senha: passwordHash});
 
