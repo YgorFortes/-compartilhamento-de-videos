@@ -3,6 +3,7 @@ import { AuthService } from "../services/AuthService.js";
 import { ValidatorSchemaAuth } from "../validators/ValidatorSchemaAuth.js";
 import { ValidatorSchemaUser } from "../validators/ValidatorSchemaUser.js";
 import { UserService } from "../services/UserService.js";
+import { TokenVerificationMiddleware } from "../../app/middlewares/TokenVerificationMiddleware.js";
 
 export class UserController extends CrudControllerUtils {
   constructor(){
@@ -11,7 +12,7 @@ export class UserController extends CrudControllerUtils {
     this.userService = new UserService();
     this.validatorSchemaAuth = new ValidatorSchemaAuth();
     this.validatorSchemaUser = new ValidatorSchemaUser();
-    this.setupRouter(this.login());
+    this.setupRouter(this.login(), this.logout());
   }
 
   login (){
@@ -41,7 +42,16 @@ export class UserController extends CrudControllerUtils {
         next(error);
       }
 
-     });
+    });
+  }
 
+  logout(){
+    this.router.post('/logout', TokenVerificationMiddleware.checkAuthToken,  TokenVerificationMiddleware.removeToken, async(req,res, next)=>{
+      try {
+        return res.status(200).send({mensagem: 'Usuário deslogado.'});
+      } catch (error) {
+        next(error);
+      }
+    });
   }
 }
