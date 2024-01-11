@@ -120,7 +120,7 @@ A API expõe os seguintes *endpoints* a partir da *base URL* `http://localhost:3
 * `POST /usuario/logout`
 * `PATCH /usuario/`
 
-### Endpoints com autorização via token
+### Endpoints sem autorização via token
 `/videos`
 * `GET /videos/free`
 
