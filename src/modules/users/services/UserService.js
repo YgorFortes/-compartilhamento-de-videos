@@ -13,6 +13,22 @@ export class UserService extends CrudServiceUtils {
     this.utilsUser = new UtilsUser();
   }
 
+  async findByEmailOrLogin(login , email){
+    if(login){
+      const userByLogin = await this.userRepository.findByLogin(login);
+      if(userByLogin){
+        return userByLogin; 
+      }
+    }
+
+    if(email){
+      const userByEmail = await this.userRepository.findByEmail(email);
+      if(userByEmail){
+        return userByEmail; 
+      }
+    }
+  } 
+
 
   async create(userData){
     const {login,email , senha} = userData;
@@ -37,20 +53,41 @@ export class UserService extends CrudServiceUtils {
     }
   }
 
-  
-  async findByEmailOrLogin(login , email){
-    if(login){
-      const userByLogin = await this.userRepository.findByLogin(login);
-      if(userByLogin){
-        return userByLogin; 
-      }
-    }
+  async update(useData, idUsuario){
+    const {login, email, senha} = useData;
+    try {
+      await this.validatorSchemaUser.update(useData);
 
-    if(email){
-      const userByEmail = await this.userRepository.findByEmail(email);
-      if(userByEmail){
-        return userByEmail; 
+      const userExist = await this.userRepository.findOne(idUsuario);
+
+      if(!userExist){
+        throw new CustomError('Usuário não encontrado.',404);
       }
+
+      const passwordHash = senha ? await this.utilsUser.createHashPassword(senha) : undefined;
+
+      await this.checkUniqueEmailOrLogin(idUsuario, email, login);
+
+      const updatedUserInfo  = this.userRepository.update({...useData, senha: passwordHash}, idUsuario);
+
+     return updatedUserInfo;
+    } catch (error) {
+      CustomError.checkAndThrowError(error);
     }
-  } 
+  }
+
+  async checkUniqueEmailOrLogin(idUsuario, email, login){
+
+    try {
+      const emailOrLoginCount = await this.userRepository.countAllExceptId(idUsuario, email, login);
+
+      if(emailOrLoginCount > 0){
+        throw new CustomError('Email ou login já cadastrado por outro usuário.', 409);
+      }
+    } catch (error) {
+      CustomError.checkAndThrowError(error);
+    }
+    
+  }
+
 }

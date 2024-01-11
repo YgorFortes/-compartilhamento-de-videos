@@ -4,6 +4,7 @@ import { ValidatorSchemaAuth } from "../validators/ValidatorSchemaAuth.js";
 import { ValidatorSchemaUser } from "../validators/ValidatorSchemaUser.js";
 import { UserService } from "../services/UserService.js";
 import { TokenVerificationMiddleware } from "../../app/middlewares/TokenVerificationMiddleware.js";
+import { UtilsUser } from "../utils/UtilsUser.js";
 
 export class UserController extends CrudControllerUtils {
   constructor(){
@@ -12,6 +13,7 @@ export class UserController extends CrudControllerUtils {
     this.userService = new UserService();
     this.validatorSchemaAuth = new ValidatorSchemaAuth();
     this.validatorSchemaUser = new ValidatorSchemaUser();
+    this.utilsUser = new UtilsUser();
     this.setupRouter(this.login(), this.logout());
   }
 
@@ -26,8 +28,16 @@ export class UserController extends CrudControllerUtils {
         next(error);
       }
     });
+  }
 
-
+  logout(){
+    this.router.post('/logout', TokenVerificationMiddleware.checkAuthToken,  TokenVerificationMiddleware.removeToken, async(req,res, next)=>{
+      try {
+        return res.status(200).send({mensagem: 'Usuário deslogado.'});
+      } catch (error) {
+        next(error);
+      }
+    });
   }
 
   create () {
@@ -45,13 +55,20 @@ export class UserController extends CrudControllerUtils {
     });
   }
 
-  logout(){
-    this.router.post('/logout', TokenVerificationMiddleware.checkAuthToken,  TokenVerificationMiddleware.removeToken, async(req,res, next)=>{
+  update(){
+    this.router.patch('/', TokenVerificationMiddleware.checkAuthToken, async(req, res, next)=>{
       try {
-        return res.status(200).send({mensagem: 'Usuário deslogado.'});
+        const userValidated = await this.validatorSchemaUser.update(req.body);
+
+        const idUsuario = await this.utilsUser.getUserIdFromToken(req);
+
+        const newInfoUser = await this.userService.update(userValidated, idUsuario);
+
+        return res.status(200).send(newInfoUser);
       } catch (error) {
         next(error);
       }
     });
   }
+
 }

@@ -35,4 +35,18 @@ export class UtilsUser {
     
   }
 
+  async getUserIdFromToken(req){
+    try {
+      const secretKey = process.env.SECRET;
+      const token  = req.get('authorization').split(' ')[1];
+
+      const idUsuario = await jsonwebtoken.verify(token, secretKey).id;
+      
+      return idUsuario;
+    } catch (error) {
+      CustomError.checkAndThrowError(error);
+    }
+  }
+
+
 }
