@@ -28,9 +28,36 @@ export class UserRepository extends CrudRepositoryUtils {
   
   }
 
-  
-  update (){
+  async countAllExceptId(idUsuario, email, login){
+    const conditions = {
+      NOT: {
+        id: idUsuario,
+      },
+      OR: [
+        login ? { login: { equals: login } } : {},
+        email ? { email: { equals: email } } : {},
+      ],
+    };
 
+    return this.prismaClient.usuarios.count({
+      where: conditions
+    });
+  }
+  
+
+  
+  update (useInfoData, idUsuario ){
+    return this.prismaClient.usuarios.update({
+      data: useInfoData, 
+      where: {id: idUsuario} ,
+      select: {
+        id: true,
+        login: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true
+      } 
+    });
   }
 
   delete (){
