@@ -8,11 +8,29 @@ export class  VideosController extends CrudControllerUtils {
     super();
     this.videoService = new VideoService();
     this.validatorSchema = new ValitatorSchemaVideo();
-    this.setupRouter();
+  }
+
+  setupRouter(){
+    this.freeVideo();
+    super.setupRouter();
+  }
+
+  freeVideo(){
+    this.router.get('/free', async (req, res, next) => {
+     
+      try {
+        const videos = await this.videoService.findVideosFree();
+
+        return res.status(200).send(videos);
+      } catch (error) {
+        next(error);
+      }
+    });
   }
 
   findAll(){
     this.router.get('/',TokenVerificationMiddleware.checkAuthToken, async (req, res, next) => {
+     
       try {
         const filters = await this.validatorSchema.findAll(req.query);
         
@@ -27,7 +45,6 @@ export class  VideosController extends CrudControllerUtils {
 
   findOne(){
     this.router.get('/:id', TokenVerificationMiddleware.checkAuthToken, async (req, res, next)=>{
-
      try {
       const videoId = await this.validatorSchema.findOne(req.params);
 

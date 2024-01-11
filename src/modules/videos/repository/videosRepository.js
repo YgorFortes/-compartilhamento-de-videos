@@ -13,6 +13,12 @@ export class VideosRepository extends CrudRepositoryUtils {
     });
   }
 
+  findVideosFree(){
+    return this.prismaClient.videos.findMany({
+      take: 10
+    });
+  }
+
   create(videoData){
     return this.prismaClient.videos.create({data: videoData});
   }

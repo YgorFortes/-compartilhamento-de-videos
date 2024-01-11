@@ -54,6 +54,15 @@ export class VideoService extends CrudServiceUtils{
     }
   }
 
+  async findVideosFree(){
+    try {
+      const videosFree =  await this.videoRepository.findVideosFree();
+      return videosFree;
+    } catch (error) {
+      CustomError.checkAndThrowError(error);
+    }
+  }
+
   async create(videoData){
     try {
       await this.validatorSchema.create(videoData);
